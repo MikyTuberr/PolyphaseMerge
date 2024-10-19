@@ -9,6 +9,7 @@ class Parallelogram
 {
 public:
 	Parallelogram(double aSide, double bSide, double theta) : aSide(aSide), bSide(bSide), theta(theta) {};
+	Parallelogram() : aSide(0), bSide(0), theta(0) {};
 	~Parallelogram() = default;
 
 	std::vector<double> getPackedToVector() const;

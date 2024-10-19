@@ -1,47 +1,50 @@
 #include "storage/Tape.h"
+#include "data/RecordFactory.h"
+#include "data/FileIO.h"
 
 int main() {
-    Tape tape("file.bin");
+    std::string filename = "src/data.bin";
 
-    // Zapis
-    if (tape.open({ std::ios::binary, std::ios::out })) {
-        std::cout << "WRITE SUCCESS!\n";
+    int choice;
+    std::cout << "Select an option:\n";
+    std::cout << "1. Generate random records and save to file\n";
+    std::cout << "2. Enter records manually and save to file\n";
+    std::cout << "3. Skip\n";
+    std::cin >> choice;
 
-        Parallelogram parallelogram(3.0, 4.0, 60.0);
-        Record record(parallelogram);
+    if (choice != 3) {
+        int numRecords;
+        std::cout << "Enter the number of records: ";
+        std::cin >> numRecords;
 
-        std::vector<Record> data = { record };
-        if (tape.write(data)) {
-            std::cout << "Record written successfully.\n";
+        if (choice == 1) {
+            RecordFactory::createRandomRecords(filename, numRecords);
+        }
+        else if (choice == 2) {
+            RecordFactory::createManualRecords(filename, numRecords);
         }
         else {
-            std::cout << "Failed to write record.\n";
+            std::cout << "Invalid option!\n";
+            return 1;
         }
-
-        tape.close();
-    }
-    else {
-        std::cout << "WRITE FAIL!\n";
     }
 
-    // Odczyt
-    if (tape.open({ std::ios::binary, std::ios::in })) {
-        std::cout << "READ SUCCESS!\n";
+    FileIO fileIO;
+    std::vector<Record> records;
 
-        std::vector<Record> readData;
-        if (tape.read(readData, 1)) {
-            std::cout << "Read record: "; 
-            readData[0].print();
-        }
-        else {
-            std::cout << "Failed to read record.\n";
-        }
-
-        tape.close();
+    try {
+        std::streampos position = 0;
+        size_t recordsToRead = 5000;
+        position = fileIO.read(filename, records, position, recordsToRead);
     }
-    else {
-        std::cout << "READ FAIL!\n";
+    catch (const std::runtime_error& e) {
+        std::cerr << e.what() << std::endl;
+        return 1;
     }
 
-	return 0;
+    for (const auto& record : records) {
+        record.print();
+    }
+
+    return 0;
 }

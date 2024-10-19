@@ -4,13 +4,15 @@
 class Record
 {
 public:
-	Record(const Parallelogram& parallelogram) : parallelogram(parallelogram) {};
-	Record() : parallelogram(Parallelogram(0, 0, 0)) {}
+	Record() : parallelogram(Parallelogram()) {}
+	Record(const Parallelogram& parallelogram) : parallelogram(parallelogram) {}
+	Record(const std::vector<double>& data) : parallelogram(data[0], data[1], data[2]) {}
+	Record(double a, double b, double theta) : parallelogram(a, b, theta) {}
 	~Record() = default;
 
 	std::vector<double> getData() const;
 	void setData(const std::vector<double> data);
-	void print();
+	void print() const;
 private:
 	Parallelogram parallelogram;
 };

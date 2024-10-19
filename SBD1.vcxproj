@@ -128,12 +128,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\data\FileIO.cpp" />
+    <ClCompile Include="src\data\RecordFactory.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\models\Parallelogram.cpp" />
     <ClCompile Include="src\models\Record.cpp" />
     <ClCompile Include="src\storage\Tape.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\data\FileIO.h" />
+    <ClInclude Include="src\data\RecordFactory.h" />
     <ClInclude Include="src\models\Parallelogram.h" />
     <ClInclude Include="src\models\Record.h" />
     <ClInclude Include="src\storage\Tape.h" />
