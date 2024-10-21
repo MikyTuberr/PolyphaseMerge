@@ -1,5 +1,10 @@
 #include "Record.h"
 
+int Record::getDataSize()
+{
+    return Parallelogram::getContentSize();
+}
+
 std::vector<double> Record::getData() const
 {
     return parallelogram.getPackedToVector();

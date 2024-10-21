@@ -1,9 +1,11 @@
+#include "config.h"
 #include "storage/Tape.h"
-#include "data/RecordFactory.h"
-#include "data/FileIO.h"
+#include "tools/RecordFactory.h"
+#include "tools/FileIO.h"
+#include <filesystem>
 
 int main() {
-    std::string filename = "src/data.bin";
+    std::string filename = "src/data/data.bin";
 
     int choice;
     std::cout << "Select an option:\n";
@@ -29,21 +31,51 @@ int main() {
         }
     }
 
-    FileIO fileIO;
-    std::vector<Record> records;
+    int blocks = 100;
+    int blocks_completed = 0;
+    std::ifstream file(filename, std::ios::binary);
+    std::streampos position = 0;
+
+    std::cout << "\nStarting block reading...\n\n";
+    std::vector<Tape> tapes;
 
     try {
-        std::streampos position = 0;
-        size_t recordsToRead = 5000;
-        position = fileIO.read(filename, records, position, recordsToRead);
+        for (int i = 0; i < blocks; i++) {
+            std::cout << "===============" << "\n";
+            std::cout << "Block number: " << i << "\n";
+            std::cout << "===============" << "\n";
+            std::vector<Record> records;
+            position = FileIO::read(file, records, position, BLOCK_SIZE);
+            Tape tape(i);
+            tape.write(records);
+            tapes.push_back(tape);
+
+            blocks_completed++;
+
+            for (const auto& record : records) {
+                record.print();
+            }
+        }
+
     }
     catch (const std::runtime_error& e) {
-        std::cerr << e.what() << std::endl;
-        return 1;
+        std::cerr << e.what();
+        std::cerr << "Completed blocks: " << blocks_completed << "\n\n";
     }
 
-    for (const auto& record : records) {
-        record.print();
+    std::cout << "\nFinishing block reading...\n";
+    
+    file.close();
+
+    for (const auto& tape : tapes) {
+        try {
+            tape.print();
+            std::filesystem::remove(tape.getFilename());
+        }
+        catch (const std::runtime_error& e) {
+            std::cerr << e.what();
+            return 0;
+        }
     }
 
     return 0;

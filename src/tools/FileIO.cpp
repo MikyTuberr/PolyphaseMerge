@@ -1,14 +1,30 @@
 #include "FileIO.h"
 
-std::streampos FileIO::read(const std::string& filename, std::vector<Record>& records, std::streampos position, size_t bytesToRead)
+std::streampos FileIO::read(std::ifstream& file, std::vector<Record>& records, std::streampos position,
+    size_t bytesToRead)
 {
-    std::ifstream file(filename, std::ios::binary);
 
     if (!file) {
         throw std::runtime_error("File is not opened!\n.");
     }
 
+    file.seekg(0, std::ios::end);
+    std::streampos fileSize = file.tellg();
     file.seekg(position);
+
+    if (static_cast<std::streamoff>(position) + static_cast<std::streamoff>(bytesToRead) > 
+        static_cast<std::streamoff>(fileSize)) 
+    {
+        bytesToRead = static_cast<size_t>(fileSize - position);
+
+        bytesToRead = (bytesToRead / RECORD_SIZE) * RECORD_SIZE;
+
+        if (bytesToRead == 0) {;
+            std::cout << "Provided number of bytes to read is smaller than at least one complete record (24).\n";
+            return position;
+        }
+        std::cout << "Provided number of bytes to read is not multiplicity of one record size (24), changing to: " << bytesToRead << "\n";
+    }
 
     std::vector<std::byte> buffer(bytesToRead);
     file.read(reinterpret_cast<char*>(buffer.data()), bytesToRead);
@@ -18,13 +34,8 @@ std::streampos FileIO::read(const std::string& filename, std::vector<Record>& re
     }
 
     size_t bytesRead = file.gcount();
-    size_t recordSize = sizeof(double) * 3;
-
-    if (bytesRead < recordSize) {
-        throw std::runtime_error("Not enough bytes read for at least one complete record.\n");
-    }
-
-    int recordsToRead = bytesRead / recordSize;
+    size_t recordSize = RECORD_SIZE;
+    size_t recordsToRead = bytesRead / recordSize;
 
     for (size_t i = 0; i < recordsToRead; ++i) {
         std::vector<double> values(3);
@@ -39,12 +50,10 @@ std::streampos FileIO::read(const std::string& filename, std::vector<Record>& re
     std::streamoff offset = recordsToRead * recordSize;
     std::streampos newPosition = position + offset; 
 
-    file.close();
     return newPosition;
 }
 
-bool FileIO::write(const std::string& filename, const std::vector<Record>& records) {
-    std::ofstream file(filename, std::ios::binary | std::ios::app);
+void FileIO::write(std::ostream& file, const std::vector<Record>& records) {
 
     if (!file) {
         throw std::runtime_error("File is not opened!\n");
@@ -64,10 +73,6 @@ bool FileIO::write(const std::string& filename, const std::vector<Record>& recor
         }
     }
     catch (const std::exception& e) {
-        file.close();
-        throw;
+        throw e;
     }
-
-    file.close();
-    return true;
 }

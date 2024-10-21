@@ -4,23 +4,34 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <iomanip>
+
+struct ParallelogramContent {
+	double aSide;
+	double bSide;
+	double theta;
+};
 
 class Parallelogram
 {
 public:
-	Parallelogram(double aSide, double bSide, double theta) : aSide(aSide), bSide(bSide), theta(theta) {};
-	Parallelogram() : aSide(0), bSide(0), theta(0) {};
+	Parallelogram(double aSide, double bSide, double theta)
+		: content{ aSide, bSide, theta } {}
+
+	Parallelogram()
+		: content{ 0, 0, 0 } {}
+
 	~Parallelogram() = default;
 
 	std::vector<double> getPackedToVector() const;
+	static int getContentSize();
+
 	double area() const;
 	void print() const;
 
 	bool operator<(const Parallelogram& other) const;
 
 private:
-	double aSide;
-	double bSide;
-	double theta;
+	ParallelogramContent content;
 };
 

@@ -27,10 +27,13 @@
     <ClCompile Include="src\models\Parallelogram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\data\RecordFactory.cpp">
+    <ClCompile Include="src\tools\RecordFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\data\FileIO.cpp">
+    <ClCompile Include="src\tools\FileIO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\config.h">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,10 +47,10 @@
     <ClInclude Include="src\models\Parallelogram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\data\RecordFactory.h">
+    <ClInclude Include="src\tools\RecordFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\data\FileIO.h">
+    <ClInclude Include="src\tools\FileIO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
