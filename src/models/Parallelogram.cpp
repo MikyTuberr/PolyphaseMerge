@@ -28,3 +28,18 @@ bool Parallelogram::operator<(const Parallelogram& other) const
 {
 	return area() < other.area();
 }
+
+bool Parallelogram::operator>(const Parallelogram& other) const
+{
+	return area() > other.area();
+}
+
+bool Parallelogram::operator<=(const Parallelogram& other) const
+{
+	return area() <= other.area();
+}
+
+bool Parallelogram::operator>=(const Parallelogram& other) const
+{
+	return area() >= other.area();
+}

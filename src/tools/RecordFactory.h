@@ -8,7 +8,7 @@
 class RecordFactory
 {
 public:
-	static void createRandomRecords(const std::string& filename, int recordsNumber);
-	static void createManualRecords(const std::string& filename, int recordsNumber);
+	static void createRandomRecords(FileIO& io, std::ofstream& filename, int recordsNumber);
+	static void createManualRecords(FileIO& io, std::ofstream& filename, int recordsNumber);
 };
 

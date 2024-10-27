@@ -128,20 +128,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\sorting\DistributionManager.cpp" />
     <ClCompile Include="src\config.h" />
     <ClCompile Include="src\tools\FileIO.cpp" />
     <ClCompile Include="src\tools\RecordFactory.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\models\Parallelogram.cpp" />
     <ClCompile Include="src\models\Record.cpp" />
-    <ClCompile Include="src\storage\Tape.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\sorting\DistributionManager.h" />
     <ClInclude Include="src\tools\FileIO.h" />
     <ClInclude Include="src\tools\RecordFactory.h" />
     <ClInclude Include="src\models\Parallelogram.h" />
     <ClInclude Include="src\models\Record.h" />
-    <ClInclude Include="src\storage\Tape.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

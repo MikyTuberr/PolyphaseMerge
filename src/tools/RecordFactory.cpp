@@ -1,11 +1,10 @@
 #include "RecordFactory.h"
 
-void RecordFactory::createRandomRecords(const std::string& filename, int recordsNumber)
+void RecordFactory::createRandomRecords(FileIO& io, std::ofstream& file, int recordsNumber)
 {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dist(DATA_DIST_BEG, DATA_DIST_END);
-    std::ofstream file(filename, std::ios::binary | std::ios::app);
 
     for (int i = 0; i < recordsNumber; ++i) {
         double a = dist(gen);
@@ -13,17 +12,14 @@ void RecordFactory::createRandomRecords(const std::string& filename, int records
         double theta = dist(gen);
 
         Record record(a, b, theta);
-
-        FileIO::write(file, { record });
+        io.write(file, { record });
     }
 
     std::cout << recordsNumber << " random records written to file.\n\n"; \
-    file.close();
 }
 
-void RecordFactory::createManualRecords(const std::string& filename, int recordsNumber)
+void RecordFactory::createManualRecords(FileIO& io, std::ofstream& file, int recordsNumber)
 {
-    std::ofstream file(filename, std::ios::binary | std::ios::app);
     for (int i = 0; i < recordsNumber; ++i) {
         double a, b, theta;
 
@@ -36,9 +32,8 @@ void RecordFactory::createManualRecords(const std::string& filename, int records
         std::cin >> theta;
 
         Record record(a, b, theta);
-        FileIO::write(file, { record });
+        io.write(file, { record });
     }
 
     std::cout << recordsNumber << " manually entered records written to file.\n\n";
-    file.close();
 }
