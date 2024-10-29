@@ -20,17 +20,26 @@ void DistributionManager::distributeSeriesWithFibonacci()
 				writeRecord(previousRecord);
 				isSerieFinished = previousRecord > records[i];
 			}
-			previousRecord = records[i];
 
 			if (isSerieFinished) {
-				incrementSeriesCounter();
+				//TODO
+				if (!isPreviousSerieRecordWritten) {
+					isPreviousSerieRecordWritten = true;
+					incrementSeriesCounters();
+				}
+				else {
+					handleSeriesCounters();
+				}
+				previousSerieRecord = previousRecord;
 				manageTapeTurn();
 			}
+
+			previousRecord = records[i];
 		}
 	}
 
 	writeRecord(previousRecord);
-	incrementSeriesCounter();
+	handleSeriesCounters();
 
 	std::cout << "\n\nFIRST TAPE:\nSERIE: " << tape1->getSeriesCounter() << " RECORDS: " << tape1->getRecordsCounter() << "\n";
 	std::cout << "\nSECOND TAPE\nSERIE: " << tape2->getSeriesCounter() << " RECORDS: " << tape2->getRecordsCounter() << "\n";
@@ -58,7 +67,14 @@ void DistributionManager::writeRecord(Record record)
 	}
 }
 
-void DistributionManager::incrementSeriesCounter()
+void DistributionManager::handleSeriesCounters()
+{
+	if (previousRecord < previousSerieRecord) {
+		incrementSeriesCounters();
+	}
+}
+
+void DistributionManager::incrementSeriesCounters()
 {
 	if (isFirstTapeTurn) {
 		tape1->incrementSeriesCounter();

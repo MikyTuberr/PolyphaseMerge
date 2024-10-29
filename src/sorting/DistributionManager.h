@@ -10,16 +10,18 @@ class DistributionManager
 private:
 	std::pair<int, int> findFibonacciPair(int firstSeriesCounter, int secondSeriesCounter);
 	void writeRecord(Record record);
-	void incrementSeriesCounter();
+	void handleSeriesCounters();
+	void incrementSeriesCounters();
 	void manageTapeTurn();
 public:
 	DistributionManager(Tape* read_tape, Tape* tape1, Tape* tape2);
 	~DistributionManager() = default;
 	void distributeSeriesWithFibonacci();
 private:
-	Record previousRecord, lastSerieLastRecord;
+	Record previousRecord, previousSerieRecord;
 	Tape *read_tape, *tape1, *tape2;
 	bool isSerieFinished = false;
 	bool isFirstTapeTurn = true;
 	bool isPreviousRecordWritten = false;
+	bool isPreviousSerieRecordWritten = false;
 };
