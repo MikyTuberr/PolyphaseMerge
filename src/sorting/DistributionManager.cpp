@@ -1,16 +1,16 @@
 #include "DistributionManager.h"
 
-// na zmiane rekordy
+// TODO
+// sklejanie serii
 // dummy rekordy
 // cleanup code
-void DistributionManager::distributeSeriesWithFibonacci(std::ifstream& read_file)
+void DistributionManager::distributeSeriesWithFibonacci()
 {
-	FileIO io;
 	bool stop = true;
 
 	while (stop) {
 		std::vector<Record> records;
-		stop = io.read(read_file, records);
+		stop = read_tape->read(records);
 
 		for (int i = 0; i < records.size(); i++) {
 			if (!isPreviousRecordWritten) {
@@ -80,8 +80,9 @@ void DistributionManager::manageTapeTurn()
 	}
 }
 
-DistributionManager::DistributionManager(Tape* tape1, Tape* tape2)
+DistributionManager::DistributionManager(Tape* read_tape, Tape* tape1, Tape* tape2)
 {
+	this->read_tape = read_tape;
 	this->tape1 = tape1;
 	this->tape2 = tape2;
 }

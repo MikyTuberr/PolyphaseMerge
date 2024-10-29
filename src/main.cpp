@@ -1,13 +1,9 @@
-#include "config.h"
 #include "tools/RecordFactory.h"
-#include "tools/FileIO.h"
 #include "sorting/SortingManager.h"
 #include <filesystem>
 
 int main() {
-    std::string filename = "src/data/data.bin";
-    std::ofstream file(filename, std::ios::binary | std::ios::app);
-    FileIO io;
+    std::string read_tape_filename = "src/data/data.bin";
 
     int choice;
     std::cout << "Select an option:\n";
@@ -22,10 +18,10 @@ int main() {
         std::cin >> numRecords;
 
         if (choice == 1) {
-            RecordFactory::createRandomRecords(io, file, numRecords);
+            RecordFactory::createRandomRecords(read_tape_filename, numRecords);
         }
         else if (choice == 2) {
-            RecordFactory::createManualRecords(io, file, numRecords);
+            RecordFactory::createManualRecords(read_tape_filename, numRecords);
         }
         else {
             std::cout << "Invalid option!\n";
@@ -33,14 +29,13 @@ int main() {
         }
     }
 
-    file.close();
-
-    std::ifstream read_file(filename, std::ios::binary);
+    std::string tape1_filename = "src/data/tape1.bin";
+    std::string tape2_filename = "src/data/tape2.bin";
 
     std::cout << "\nStarting block reading...\n\n";
     try {
         SortingManager manager;
-        manager.sortDataFromFile(read_file);
+        manager.sortDataFromFile(read_tape_filename, tape1_filename, tape2_filename);
     }
     catch (const std::runtime_error& e) {
         std::cerr << e.what();
@@ -48,8 +43,7 @@ int main() {
 
     std::cout << "\nFinishing block reading...\n";
 
-    read_file.close();
-    std::filesystem::remove("src/data/tape1.bin");
-    std::filesystem::remove("src/data/tape2.bin");
+    std::filesystem::remove(tape1_filename);
+    std::filesystem::remove(tape2_filename);
     return 0;
 }

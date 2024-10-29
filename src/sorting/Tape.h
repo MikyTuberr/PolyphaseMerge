@@ -15,7 +15,7 @@ public:
 	bool open(const std::initializer_list<std::ios::openmode> modes);
 	void close();
 	bool write(const std::vector<Record>& records);
-	bool read(std::vector<Record>& records, std::size_t numberOfRecords);
+	bool read(std::vector<Record>& records);
 
 	void incrementSeriesCounter();
 	void incrementRecordsCounter();

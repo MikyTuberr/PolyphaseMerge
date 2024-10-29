@@ -1,7 +1,10 @@
 #include "RecordFactory.h"
 
-void RecordFactory::createRandomRecords(FileIO& io, std::ofstream& file, int recordsNumber)
+void RecordFactory::createRandomRecords(const std::string& filename, int recordsNumber)
 {
+    Tape tape(filename);
+    tape.open({ std::ios::binary, std::ios::app });
+
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dist(DATA_DIST_BEG, DATA_DIST_END);
@@ -11,15 +14,17 @@ void RecordFactory::createRandomRecords(FileIO& io, std::ofstream& file, int rec
         double b = dist(gen);
         double theta = dist(gen);
 
-        Record record(a, b, theta);
-        io.write(file, { record });
+        tape.write({ Record(a, b, theta) });
     }
-
+    tape.close();
     std::cout << recordsNumber << " random records written to file.\n\n"; \
 }
 
-void RecordFactory::createManualRecords(FileIO& io, std::ofstream& file, int recordsNumber)
+void RecordFactory::createManualRecords(const std::string& filename, int recordsNumber)
 {
+    Tape tape(filename);
+    tape.open({ std::ios::binary, std::ios::app });
+
     for (int i = 0; i < recordsNumber; ++i) {
         double a, b, theta;
 
@@ -31,9 +36,8 @@ void RecordFactory::createManualRecords(FileIO& io, std::ofstream& file, int rec
         std::cout << "Enter angle (in degrees): ";
         std::cin >> theta;
 
-        Record record(a, b, theta);
-        io.write(file, { record });
+        tape.write({ Record(a, b, theta) });
     }
-
+    tape.close();
     std::cout << recordsNumber << " manually entered records written to file.\n\n";
 }

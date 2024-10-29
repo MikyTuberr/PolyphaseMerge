@@ -4,10 +4,11 @@
 class SortingManager
 {
 public:
-	void sortDataFromFile(std::ifstream& read_file);
+	void sortDataFromFile(const std::string& read_filename, const std::string& tape1_filename, const std::string& tape2_filename);
+
     void printRecords(const std::string& binFilename) {
         FileIO io;
-        std::ifstream bin(binFilename, std::ios::binary);
+        std::fstream bin(binFilename, std::ios::binary | std::ios::in);
         bool stop = true;
         while (stop) {
             std::vector<Record> records;
@@ -16,6 +17,7 @@ public:
                 record.print();
             }
         }
+        bin.close();
     }
 };
 

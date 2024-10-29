@@ -1,6 +1,6 @@
 #include "FileIO.h"
 
-bool FileIO::read(std::ifstream& file, std::vector<Record>& records)
+bool FileIO::read(std::fstream& file, std::vector<Record>& records)
 {
     if (!file) {
         throw std::runtime_error("File is not opened!\n.");
@@ -9,7 +9,7 @@ bool FileIO::read(std::ifstream& file, std::vector<Record>& records)
     size_t bytesToRead = adjustBytesToRead(file);
 
     if (bytesToRead == 0) {
-        std::cout << "Provided number of bytes to read is smaller than one complete record size.\n";
+        std::cout << "~~~ Provided number of bytes to read is smaller than one complete record size. ~~~\n";
         return false;
     }
 
@@ -25,7 +25,7 @@ bool FileIO::read(std::ifstream& file, std::vector<Record>& records)
     return true;
 }
 
-void FileIO::write(std::ostream& file, const std::vector<Record>& records) {
+void FileIO::write(std::fstream& file, const std::vector<Record>& records) {
 
     if (!file) {
         throw std::runtime_error("File is not opened!\n");
@@ -49,7 +49,7 @@ void FileIO::write(std::ostream& file, const std::vector<Record>& records) {
     }
 }
 
-size_t FileIO::adjustBytesToRead(std::ifstream& file)
+size_t FileIO::adjustBytesToRead(std::fstream& file)
 {
     file.seekg(0, std::ios::end);
     std::streampos fileSize = file.tellg();
@@ -60,21 +60,21 @@ size_t FileIO::adjustBytesToRead(std::ifstream& file)
         static_cast<std::streamoff>(fileSize))
     {
         bytesToRead = static_cast<size_t>(fileSize - position);
-        std::cout << "End of file detected, adjusting bytesToRead to " << bytesToRead << ".\n";
+        std::cout << "~~~ End of file detected, adjusting bytesToRead to " << bytesToRead << ". ~~~\n";
     }
 
     size_t bytesToReadMultiple = (bytesToRead / recordSize) * recordSize;
 
     if (bytesToReadMultiple != bytesToRead) {
-        std::cout << "Provided number of bytes: " << bytesToRead << " to read is not a multiple of the record size, changing to : "
-            << bytesToReadMultiple << "\n";
+        std::cout << "~~~ Provided number of bytes: " << bytesToRead << " to read is not a multiple of the record size, changing to : "
+            << bytesToReadMultiple << ". ~~~\n";
         bytesToRead = bytesToReadMultiple;
     }
 
     return bytesToRead;
 }
 
-void FileIO::readBuffer(std::ifstream& file, std::vector<std::byte>& buffer, size_t bytesToRead)
+void FileIO::readBuffer(std::fstream& file, std::vector<std::byte>& buffer, size_t bytesToRead)
 {
     file.read(reinterpret_cast<char*>(buffer.data()), bytesToRead);
     if (!file) {

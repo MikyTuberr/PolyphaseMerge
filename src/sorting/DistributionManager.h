@@ -13,12 +13,12 @@ private:
 	void incrementSeriesCounter();
 	void manageTapeTurn();
 public:
-	DistributionManager(Tape* tape1, Tape* tape2);
+	DistributionManager(Tape* read_tape, Tape* tape1, Tape* tape2);
 	~DistributionManager() = default;
-	void distributeSeriesWithFibonacci(std::ifstream& read_file);
+	void distributeSeriesWithFibonacci();
 private:
 	Record previousRecord;
-	Tape *tape1, *tape2;
+	Tape *read_tape, *tape1, *tape2;
 	bool isSerieFinished = false;
 	bool isFirstTapeTurn = true;
 	bool isPreviousRecordWritten = false;

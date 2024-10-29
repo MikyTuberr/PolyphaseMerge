@@ -5,17 +5,17 @@
 
 class FileIO
 {
+private:
+    size_t adjustBytesToRead(std::fstream& file);
+    void readBuffer(std::fstream& file, std::vector<std::byte>& buffer, size_t bytesToRead);
+    void populateRecords(const std::vector<std::byte>& buffer, size_t bytesRead, std::vector<Record>& records);
+
 public:
     FileIO() : recordSize(RECORD_SIZE), blockSize(BLOCK_SIZE) {}
     ~FileIO() = default;
 
-    bool read(std::ifstream& file, std::vector<Record>& records);
-    void write(std::ostream& file, const std::vector<Record>& records);
-
-private:
-    size_t adjustBytesToRead(std::ifstream& file);
-    void readBuffer(std::ifstream& file, std::vector<std::byte>& buffer, size_t bytesToRead);
-    void populateRecords(const std::vector<std::byte>& buffer, size_t bytesRead, std::vector<Record>& records);
+    bool read(std::fstream& file, std::vector<Record>& records);
+    void write(std::fstream& file, const std::vector<Record>& records);
 
     std::streampos position = 0;
     std::size_t recordSize;

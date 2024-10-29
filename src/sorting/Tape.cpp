@@ -51,24 +51,14 @@ bool Tape::write(const std::vector<Record>& records)
 	return true;
 }
 
-bool Tape::read(std::vector<Record>& records, std::size_t numberOfRecords)
+bool Tape::read(std::vector<Record>& records)
 {
 	if (!isOpen()) {
 		std::cerr << "File is not opened!\n";
 		return false;
 	}
-	for (std::size_t i = 0; i < numberOfRecords; i++) {
-		Record record;
-		std::vector<double> data(record.getData().size());
-		file.read(reinterpret_cast<char*>(data.data()), data.size() * sizeof(double));
-		if (file.fail()) {
-			std::cerr << "Error reading file!\n";
-			return false;
-		}
-		record.setData(data);
-		records.push_back(record);
-	}
-	return true;
+
+	return io.read(file, records);;
 }
 
 void Tape::incrementSeriesCounter()
