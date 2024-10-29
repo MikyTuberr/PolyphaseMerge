@@ -13,6 +13,8 @@ void DistributionManager::distributeSeriesWithFibonacci()
 		stop = read_tape->read(records);
 
 		for (int i = 0; i < records.size(); i++) {
+			records[i].print();
+
 			if (!isPreviousRecordWritten) {
 				isPreviousRecordWritten = true;
 			}
@@ -22,16 +24,11 @@ void DistributionManager::distributeSeriesWithFibonacci()
 			}
 
 			if (isSerieFinished) {
-				//TODO
-				if (!isPreviousSerieRecordWritten) {
-					isPreviousSerieRecordWritten = true;
+				if (!isTapeCoalesced) {
 					incrementSeriesCounters();
 				}
-				else {
-					handleSeriesCounters();
-				}
-				previousSerieRecord = previousRecord;
 				manageTapeTurn();
+				handleSeriesCounters(records[i]);
 			}
 
 			previousRecord = records[i];
@@ -39,7 +36,9 @@ void DistributionManager::distributeSeriesWithFibonacci()
 	}
 
 	writeRecord(previousRecord);
-	handleSeriesCounters();
+	if (!isTapeCoalesced) {
+		incrementSeriesCounters();
+	}
 
 	std::cout << "\n\nFIRST TAPE:\nSERIE: " << tape1->getSeriesCounter() << " RECORDS: " << tape1->getRecordsCounter() << "\n";
 	std::cout << "\nSECOND TAPE\nSERIE: " << tape2->getSeriesCounter() << " RECORDS: " << tape2->getRecordsCounter() << "\n";
@@ -61,16 +60,32 @@ void DistributionManager::writeRecord(Record record)
 {
 	if (isFirstTapeTurn) {
 		tape1->write({ record });
+		tape1Tail = record;
+		if (!isTape1Written) {
+			isTape1Written = true;
+		}
 	}
 	else {
 		tape2->write({ record });
+		tape2Tail = record;
+		if (!isTape2Written) {
+			isTape2Written = true;
+		}
 	}
 }
 
-void DistributionManager::handleSeriesCounters()
+void DistributionManager::handleSeriesCounters(Record record)
 {
-	if (previousRecord < previousSerieRecord) {
-		incrementSeriesCounters();
+	if (isFirstTapeTurn && isTape1Written && record > tape1Tail) {
+		isTapeCoalesced = true;
+		//std::cout << "DECREMENT 1: " << tape1->getSeriesCounter() << "\n";
+	}
+	else if (!isFirstTapeTurn && isTape2Written && record > tape2Tail) {
+		isTapeCoalesced = true;
+		//std::cout << "DECREMENT 2: " << tape2->getSeriesCounter() << "\n";
+	}
+	else {
+		isTapeCoalesced = false;
 	}
 }
 
@@ -78,9 +93,11 @@ void DistributionManager::incrementSeriesCounters()
 {
 	if (isFirstTapeTurn) {
 		tape1->incrementSeriesCounter();
+		//std::cout << "INCREMENT 1: " << tape1->getSeriesCounter() << "\n";
 	}
 	else {
 		tape2->incrementSeriesCounter();
+		//std::cout << "INCREMENT 2: " << tape2->getSeriesCounter() << "\n";
 	}
 }
 

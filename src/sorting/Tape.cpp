@@ -66,6 +66,11 @@ void Tape::incrementSeriesCounter()
 	seriesCounter++;
 }
 
+void Tape::decrementSeriesCounter()
+{
+	seriesCounter--;
+}
+
 void Tape::incrementRecordsCounter()
 {
 	recordsCounter++;
