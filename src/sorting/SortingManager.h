@@ -1,12 +1,13 @@
 #pragma once
 #include "DistributionManager.h"
+#include <filesystem>
 
 class SortingManager
 {
 public:
-	void sortDataFromFile(const std::string& read_filename, const std::string& tape1_filename, const std::string& tape2_filename);
-
-    void printRecords(const std::string& binFilename) {
+	static void sortDataFromFile(const std::string& read_filename, const std::string& tape1_filename, const std::string& tape2_filename);
+private:
+    static void printRecords(const std::string& binFilename) {
         FileIO io;
         std::fstream bin(binFilename, std::ios::binary | std::ios::in);
         bool stop = true;

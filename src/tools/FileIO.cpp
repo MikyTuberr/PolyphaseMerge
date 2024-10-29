@@ -8,8 +8,17 @@ bool FileIO::read(std::fstream& file, std::vector<Record>& records)
 
     size_t bytesToRead = adjustBytesToRead(file);
 
+    if (this->isEof) {
+        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        std::cout << "~~~ End of file detected, stopping read operation. ~~~\n";
+        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        return false;
+    }
+
     if (bytesToRead == 0) {
-        std::cout << "~~~ Provided number of bytes to read is smaller than one complete record size. ~~~\n";
+        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        std::cout << "~~~ Insufficient bytes to read a full record.\n. ~~~\n";
+        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
         return false;
     }
 
@@ -60,14 +69,23 @@ size_t FileIO::adjustBytesToRead(std::fstream& file)
         static_cast<std::streamoff>(fileSize))
     {
         bytesToRead = static_cast<size_t>(fileSize - position);
-        std::cout << "~~~ End of file detected, adjusting bytesToRead to " << bytesToRead << ". ~~~\n";
+
+        if (bytesToRead == 0) {
+            this->isEof = true;
+            return bytesToRead;
+        }
+
+        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        std::cout << "~~~ Adjusting read bytes to " << bytesToRead <<", due to insufficient block size (" << blockSize << "). ~~~\n";
+        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
     }
 
     size_t bytesToReadMultiple = (bytesToRead / recordSize) * recordSize;
 
     if (bytesToReadMultiple != bytesToRead) {
-        std::cout << "~~~ Provided number of bytes: " << bytesToRead << " to read is not a multiple of the record size, changing to : "
-            << bytesToReadMultiple << ". ~~~\n";
+        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        std::cout << "~~~ Bytes to read (" << bytesToRead << ") not a multiple of record size. Adjusted to " << bytesToReadMultiple << ". ~~~\n";
+        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
         bytesToRead = bytesToReadMultiple;
     }
 

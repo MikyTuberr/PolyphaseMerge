@@ -17,6 +17,8 @@ public:
     bool read(std::fstream& file, std::vector<Record>& records);
     void write(std::fstream& file, const std::vector<Record>& records);
 
+private:
+    bool isEof = false;
     std::streampos position = 0;
     std::size_t recordSize;
     std::size_t blockSize;

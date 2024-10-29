@@ -17,7 +17,7 @@ public:
 	~DistributionManager() = default;
 	void distributeSeriesWithFibonacci();
 private:
-	Record previousRecord;
+	Record previousRecord, lastSerieLastRecord;
 	Tape *read_tape, *tape1, *tape2;
 	bool isSerieFinished = false;
 	bool isFirstTapeTurn = true;

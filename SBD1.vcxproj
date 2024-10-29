@@ -128,6 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\tools\RecordManager.cpp" />
     <ClCompile Include="src\sorting\SortingManager.cpp" />
     <ClCompile Include="src\sorting\DistributionManager.cpp" />
     <ClCompile Include="src\config.h" />
@@ -139,6 +140,7 @@
     <ClCompile Include="src\sorting\Tape.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\tools\RecordManager.h" />
     <ClInclude Include="src\sorting\SortingManager.h" />
     <ClInclude Include="src\sorting\DistributionManager.h" />
     <ClInclude Include="src\tools\FileIO.h" />

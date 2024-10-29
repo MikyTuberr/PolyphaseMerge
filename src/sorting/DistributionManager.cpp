@@ -32,8 +32,8 @@ void DistributionManager::distributeSeriesWithFibonacci()
 	writeRecord(previousRecord);
 	incrementSeriesCounter();
 
-	std::cout << "\n\nFIRST SERIE: " << tape1->getSeriesCounter() << " RECORDS: " << tape1->getRecordsCounter() << "\n";
-	std::cout << "SECOND SERIE: " << tape2->getSeriesCounter() << " RECORDS: " << tape2->getRecordsCounter() << "\n";
+	std::cout << "\n\nFIRST TAPE:\nSERIE: " << tape1->getSeriesCounter() << " RECORDS: " << tape1->getRecordsCounter() << "\n";
+	std::cout << "\nSECOND TAPE\nSERIE: " << tape2->getSeriesCounter() << " RECORDS: " << tape2->getRecordsCounter() << "\n";
 }
 
 std::pair<int, int> DistributionManager::findFibonacciPair(int firstSeriesCounter, int secondSeriesCounter)
