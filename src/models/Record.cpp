@@ -12,12 +12,12 @@ std::vector<double> Record::getData() const
 
 Parallelogram Record::getParallelogram() const
 {
-    return this->parallelogram;
+    return parallelogram;
 }
 
 void Record::setData(const std::vector<double> data)
 {
-    this->parallelogram = Parallelogram(data[0], data[1], data[2]);
+    parallelogram = Parallelogram(data[0], data[1], data[2]);
 }
 
 void Record::print() const
@@ -27,20 +27,20 @@ void Record::print() const
 
 bool Record::operator<(const Record& other) const
 {
-    return this->parallelogram < other.getParallelogram();
+    return parallelogram < other.getParallelogram();
 }
 
 bool Record::operator>(const Record& other) const
 {
-    return this->parallelogram > other.getParallelogram();
+    return parallelogram > other.getParallelogram();
 }
 
 bool Record::operator<=(const Record& other) const
 {
-    return this->parallelogram <= other.getParallelogram();
+    return parallelogram <= other.getParallelogram();
 }
 
 bool Record::operator>=(const Record& other) const
 {
-    return this->parallelogram >= other.getParallelogram();
+    return parallelogram >= other.getParallelogram();
 }

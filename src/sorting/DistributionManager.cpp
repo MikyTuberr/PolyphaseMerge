@@ -3,49 +3,43 @@
 // na zmiane rekordy
 // dummy rekordy
 // cleanup code
-void DistributionManager::distributeSeriesWithFibonacci(FileIO& io, const std::vector<Record>& block, std::ofstream& file1, std::ofstream& file2)
+void DistributionManager::distributeSeriesWithFibonacci(std::ifstream& read_file)
 {
-	for (int i = 0; i < block.size() - 1; i++) {
-		if (!isPreviousRecordWritten) {
-			this->isPreviousRecordWritten = true;
-			this->writeRecord(io, this->previousRecord, file1, file2);
-			this->isSerieFinished = this->previousRecord >= block[i];
+	FileIO io;
+	bool stop = true;
 
-			i = -1;
-		}
-		else {
-			writeRecord(io, block[i], file1, file2);
-			this->isSerieFinished = block[i] >= block[i + 1];
-		}
+	while (stop) {
+		std::vector<Record> records;
+		stop = io.read(read_file, records);
 
-		if (this->isSerieFinished) {
-			if (this->isFirstTapeTurn) {
-				this->firstFileSeriesCount++;
+		for (int i = 0; i < records.size(); i++) {
+			if (!isPreviousRecordWritten) {
+				isPreviousRecordWritten = true;
 			}
 			else {
-				this->secondFileSeriesCount++;
+				writeRecord(previousRecord);
+				isSerieFinished = previousRecord > records[i];
 			}
+			previousRecord = records[i];
 
-			std::pair<int, int> seriesCountToDistribute = this->findFibonacciPair();
-
-			if (this->firstFileSeriesCount < seriesCountToDistribute.first) {
-				this->isFirstTapeTurn = true;
-			} 
-			else {
-				this->isFirstTapeTurn = false;
+			if (isSerieFinished) {
+				incrementSeriesCounter();
+				manageTapeTurn();
 			}
 		}
-		this->recordsCount++;
 	}
 
-	this->isPreviousRecordWritten = false;
-	this->previousRecord = block.back();
+	writeRecord(previousRecord);
+	incrementSeriesCounter();
+
+	std::cout << "\n\nFIRST SERIE: " << tape1->getSeriesCounter() << " RECORDS: " << tape1->getRecordsCounter() << "\n";
+	std::cout << "SECOND SERIE: " << tape2->getSeriesCounter() << " RECORDS: " << tape2->getRecordsCounter() << "\n";
 }
 
-std::pair<int, int> DistributionManager::findFibonacciPair()
+std::pair<int, int> DistributionManager::findFibonacciPair(int firstSeriesCounter, int secondSeriesCounter)
 {
 	int a = 0, b = 1;
-	int seriesCount = this->firstFileSeriesCount + this->secondFileSeriesCount;
+	int seriesCount = firstSeriesCounter + secondSeriesCounter;
 	while (a + b <= seriesCount) {
 		int temp = a + b;
 		a = b;
@@ -54,14 +48,40 @@ std::pair<int, int> DistributionManager::findFibonacciPair()
 	return std::pair<int, int>(a, b);
 }
 
-void DistributionManager::writeRecord(FileIO& io, Record record, std::ofstream& file1, std::ofstream& file2)
+void DistributionManager::writeRecord(Record record)
 {
-	if (this->isFirstTapeTurn) {
-		io.write(file1, { record });
-		this->firstFileRecordsCount++;
+	if (isFirstTapeTurn) {
+		tape1->write({ record });
 	}
 	else {
-		io.write(file2, { record });
-		this->secondFileRecordsCount++;
+		tape2->write({ record });
 	}
+}
+
+void DistributionManager::incrementSeriesCounter()
+{
+	if (isFirstTapeTurn) {
+		tape1->incrementSeriesCounter();
+	}
+	else {
+		tape2->incrementSeriesCounter();
+	}
+}
+
+void DistributionManager::manageTapeTurn()
+{
+	std::pair<int, int> seriesCountToDistribute = findFibonacciPair(tape1->getSeriesCounter(), tape2->getSeriesCounter());
+
+	if (tape1->getSeriesCounter() < seriesCountToDistribute.first) {
+		isFirstTapeTurn = !isFirstTapeTurn;
+	}
+	else {
+		isFirstTapeTurn = false;
+	}
+}
+
+DistributionManager::DistributionManager(Tape* tape1, Tape* tape2)
+{
+	this->tape1 = tape1;
+	this->tape2 = tape2;
 }

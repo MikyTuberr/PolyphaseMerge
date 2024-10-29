@@ -1,7 +1,7 @@
 #include "config.h"
 #include "tools/RecordFactory.h"
 #include "tools/FileIO.h"
-#include "sorting/DistributionManager.h"
+#include "sorting/SortingManager.h"
 #include <filesystem>
 
 int main() {
@@ -36,68 +36,20 @@ int main() {
     file.close();
 
     std::ifstream read_file(filename, std::ios::binary);
-    bool stop = true;
-    int blocks_completed = 0;
 
     std::cout << "\nStarting block reading...\n\n";
     try {
-        DistributionManager manager;
-        std::ofstream tape1("src/data/tape1.bin", std::ios::binary | std::ios::app);
-        std::ofstream tape2("src/data/tape2.bin", std::ios::binary | std::ios::app);
-        while (stop) {
-            std::vector<Record> records;
-            stop = io.read(read_file, records);
-            blocks_completed++;
-
-            if (records.size() > 0) manager.distributeSeriesWithFibonacci(io, records, tape1, tape2);
-        }
-        tape1.close();
-        tape2.close();
-
-        stop = true;
-        int firstTapeSeries = 0, secondTapeSeries = 0;
-
-        FileIO io1, io2;
-        std::ifstream tape11("src/data/tape1.bin", std::ios::binary);
-        std::ifstream tape22("src/data/tape2.bin", std::ios::binary);
-        while (stop) {
-            /*std::cout << "=====================\n";
-            std::cout << "FIRST TAPE\n";
-            std::cout << "=====================\n";*/
-            std::vector<Record> records;
-            stop = io1.read(tape11, records);
-            for (const auto& record : records) {
-                //record.print();
-                secondTapeSeries++;
-            }
-        }
-
-        stop = true;
-        while (stop) {
-            /*std::cout << "=====================\n";
-            std::cout << "SECOND TAPE\n";
-            std::cout << "=====================\n";*/
-            std::vector<Record> records;
-            stop = io2.read(tape22, records);
-            for (const auto& record : records) {
-                //record.print();
-                firstTapeSeries++;
-            }
-        }
-        tape11.close();
-        tape22.close();
-        std::cout << "\n FIRST: " << firstTapeSeries << "\n";
-        std::cout << "SECOND: " << secondTapeSeries << "\n";
-        std::cout << "RECORD SIZE: " << RECORD_SIZE << "\n";
+        SortingManager manager;
+        manager.sortDataFromFile(read_file);
     }
     catch (const std::runtime_error& e) {
         std::cerr << e.what();
-        std::cerr << "Completed blocks: " << blocks_completed << "\n\n";
     }
 
     std::cout << "\nFinishing block reading...\n";
-    
-    read_file.close();
 
+    read_file.close();
+    std::filesystem::remove("src/data/tape1.bin");
+    std::filesystem::remove("src/data/tape2.bin");
     return 0;
 }

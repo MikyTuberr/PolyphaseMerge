@@ -6,7 +6,7 @@ bool FileIO::read(std::ifstream& file, std::vector<Record>& records)
         throw std::runtime_error("File is not opened!\n.");
     }
 
-    size_t bytesToRead = this->adjustBytesToRead(file);
+    size_t bytesToRead = adjustBytesToRead(file);
 
     if (bytesToRead == 0) {
         std::cout << "Provided number of bytes to read is smaller than one complete record size.\n";
@@ -14,13 +14,13 @@ bool FileIO::read(std::ifstream& file, std::vector<Record>& records)
     }
 
     std::vector<std::byte> buffer(bytesToRead);
-    this->readBuffer(file, buffer, bytesToRead);
+    readBuffer(file, buffer, bytesToRead);
 
     size_t bytesRead = buffer.size();
-    this->populateRecords(buffer, bytesRead, records);
+    populateRecords(buffer, bytesRead, records);
 
-    std::streamoff offset = (bytesRead / this->recordSize) * this->recordSize;
-    this->position += offset;
+    std::streamoff offset = (bytesRead / recordSize) * recordSize;
+    position += offset;
 
     return true;
 }
@@ -53,17 +53,17 @@ size_t FileIO::adjustBytesToRead(std::ifstream& file)
 {
     file.seekg(0, std::ios::end);
     std::streampos fileSize = file.tellg();
-    file.seekg(this->position);
-    size_t bytesToRead = this->blockSize;
+    file.seekg(position);
+    size_t bytesToRead = blockSize;
 
-    if (static_cast<std::streamoff>(this->position) + static_cast<std::streamoff>(bytesToRead) >
+    if (static_cast<std::streamoff>(position) + static_cast<std::streamoff>(bytesToRead) >
         static_cast<std::streamoff>(fileSize))
     {
-        bytesToRead = static_cast<size_t>(fileSize - this->position);
+        bytesToRead = static_cast<size_t>(fileSize - position);
         std::cout << "End of file detected, adjusting bytesToRead to " << bytesToRead << ".\n";
     }
 
-    size_t bytesToReadMultiple = (bytesToRead / this->recordSize) * this->recordSize;
+    size_t bytesToReadMultiple = (bytesToRead / recordSize) * recordSize;
 
     if (bytesToReadMultiple != bytesToRead) {
         std::cout << "Provided number of bytes: " << bytesToRead << " to read is not a multiple of the record size, changing to : "
@@ -84,11 +84,11 @@ void FileIO::readBuffer(std::ifstream& file, std::vector<std::byte>& buffer, siz
 
 void FileIO::populateRecords(const std::vector<std::byte>& buffer, size_t bytesRead, std::vector<Record>& records)
 {
-    size_t recordsToRead = bytesRead / this->recordSize;
+    size_t recordsToRead = bytesRead / recordSize;
 
     for (size_t i = 0; i < recordsToRead; ++i) {
         std::vector<double> values(3);
-        std::memcpy(values.data(), buffer.data() + (i * this->recordSize), this->recordSize);
+        std::memcpy(values.data(), buffer.data() + (i * recordSize), recordSize);
         records.push_back(Record(values));
     }
 }

@@ -6,7 +6,11 @@
 #include <vector>
 #include <iomanip>
 
-
+struct ParallelogramContent {
+	double aSide;
+	double bSide;
+	double theta;
+};
 
 class Parallelogram
 {
@@ -31,12 +35,6 @@ public:
 	bool operator>=(const Parallelogram& other) const;
 
 private:
-	inline struct ParallelogramContent {
-		double aSide;
-		double bSide;
-		double theta;
-	};
-
 	ParallelogramContent content;
 };
 

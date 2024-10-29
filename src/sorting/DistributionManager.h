@@ -3,28 +3,23 @@
 #include <vector>
 #include "../tools/FileIO.h"
 #include "../models/Record.h"
+#include "Tape.h"
 
 class DistributionManager 
 {
 private:
-	std::pair<int, int> findFibonacciPair();
-	void writeRecord(FileIO& io, Record record, std::ofstream& file1, std::ofstream& file2);
+	std::pair<int, int> findFibonacciPair(int firstSeriesCounter, int secondSeriesCounter);
+	void writeRecord(Record record);
+	void incrementSeriesCounter();
+	void manageTapeTurn();
 public:
-	DistributionManager() = default;
-	~DistributionManager() {
-		std::cout << "\n\nFIRST SERIE: " << firstFileSeriesCount << " RECORDS: " << firstFileRecordsCount << "\n";
-		std::cout << "SECOND SERIE: " << secondFileSeriesCount << " RECORDS: " << secondFileRecordsCount << "\n";
-	}
-
-	void distributeSeriesWithFibonacci(FileIO& io, const std::vector<Record>& block, std::ofstream& file1, std::ofstream& file2);
+	DistributionManager(Tape* tape1, Tape* tape2);
+	~DistributionManager() = default;
+	void distributeSeriesWithFibonacci(std::ifstream& read_file);
 private:
-	Record previousRecord = Record(DBL_MAX, DBL_MAX, DBL_MAX);
-	int firstFileRecordsCount = 0;
-	int secondFileRecordsCount = 0;
-	int firstFileSeriesCount = 0;
-	int secondFileSeriesCount = 0;
-	bool isSerieFinished = true;
+	Record previousRecord;
+	Tape *tape1, *tape2;
+	bool isSerieFinished = false;
 	bool isFirstTapeTurn = true;
-	bool isPreviousRecordWritten = true;
-	int recordsCount = 0;
+	bool isPreviousRecordWritten = false;
 };
