@@ -1,7 +1,7 @@
 #pragma once
 #include <fstream>
-#include "../models/Record.h"
 #include <vector>
+#include "../models/Record.h"
 #include "../tools/FileIO.h"
 
 class Tape
@@ -12,23 +12,33 @@ public:
 	~Tape();
 
 	bool isOpen() const;
+	bool isEmpty() const;
+
 	bool open(const std::initializer_list<std::ios::openmode> modes);
 	void close();
 	bool write(const std::vector<Record>& records);
 	bool read(std::vector<Record>& records);
 
 	void incrementSeriesCounter();
-	void decrementSeriesCounter();
 	void incrementRecordsCounter();
 
 	int getSeriesCounter() const;
+	int getDummySeriesCounter() const;
 	int getRecordsCounter() const;
+	Record getTail() const;
+
+	void setSeriesCounter(int seriesCount);
+	void setDummySeriesCounter(int dummySeriesCount);
+	void setTail(Record record);
 
 private:
 	FileIO io;
 	std::string filename;
 	std::fstream file;
-	int seriesCounter;
-	int recordsCounter;
+	Record tail;
+	bool _isEmpty = true;
+	int seriesCounter = 0;
+	int dummySeriesCounter = 0;
+	int recordsCounter = 0;
 };
 

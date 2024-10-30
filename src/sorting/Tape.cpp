@@ -1,9 +1,7 @@
 #include "Tape.h"
 
 Tape::Tape(const std::string& filename) 
-    : filename(filename),
-    recordsCounter(0),
-    seriesCounter(0)
+    : filename(filename)
 {
 }
 
@@ -17,6 +15,11 @@ Tape::~Tape()
 bool Tape::isOpen() const
 {
 	return file.is_open();
+}
+
+bool Tape::isEmpty() const
+{
+	return _isEmpty;
 }
 
 bool Tape::open(const std::initializer_list<std::ios::openmode> modes)
@@ -46,6 +49,9 @@ bool Tape::write(const std::vector<Record>& records)
 		std::cerr << "File is not opened!\n";
 		return false;
 	}
+	if (_isEmpty) {
+		_isEmpty = false;
+	}
 	io.write(file, records);
 	incrementRecordsCounter();
 	return true;
@@ -66,11 +72,6 @@ void Tape::incrementSeriesCounter()
 	seriesCounter++;
 }
 
-void Tape::decrementSeriesCounter()
-{
-	seriesCounter--;
-}
-
 void Tape::incrementRecordsCounter()
 {
 	recordsCounter++;
@@ -81,7 +82,32 @@ int Tape::getSeriesCounter() const
 	return seriesCounter;
 }
 
+int Tape::getDummySeriesCounter() const
+{
+	return dummySeriesCounter;
+}
+
 int Tape::getRecordsCounter() const
 {
 	return recordsCounter;
+}
+
+Record Tape::getTail() const
+{
+	return tail;
+}
+
+void Tape::setSeriesCounter(int seriesCount)
+{
+	seriesCounter = seriesCount;
+}
+
+void Tape::setDummySeriesCounter(int dummySeriesCount)
+{
+	dummySeriesCounter = dummySeriesCount;
+}
+
+void Tape::setTail(Record record)
+{
+	tail = record;
 }
