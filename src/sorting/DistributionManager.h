@@ -8,7 +8,7 @@
 class DistributionManager 
 {
 private:
-	std::pair<int, int> findFibonacciPair(int firstSeriesCounter, int secondSeriesCounter);
+	int findFibonacciNumberOfSeries(const int& firstSeriesCounter, const int& secondSeriesCounter);
 	void writeRecord(const Record& record);
 	void handleSeriesCounters(const Record& record);
 	void incrementSeriesCounters();
@@ -28,6 +28,7 @@ private:
 	bool isSerieEnd = false;
 	bool isSerieCoalesced = false;
 
-	bool isFirstTapeTurn = true;
+	bool isFirstTapeTurn = false;
+	int numberOfSeriesForTape = 1;
 	bool isFirstRecord = true;
 };

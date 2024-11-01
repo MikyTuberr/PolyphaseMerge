@@ -15,7 +15,7 @@ void DistributionManager::distributeSeriesWithFibonacci()
 
 	finalizeDistribution();
 
-	std::cout << "\n\nFIRST TAPE:\nSERIES: " << tape1->getSeriesCounter() << " RECORDS: " << tape1->getRecordsCounter() << "\n";
+	std::cout << "\n\nFIRST TAPE:\nSERIES: " << tape1->getSeriesCounter() << " (" << tape1->getDummySeriesCounter() << ") RECORDS: " << tape1->getRecordsCounter() << "\n";
 	std::cout << "\nSECOND TAPE\nSERIES: " << tape2->getSeriesCounter() << " (" << tape2->getDummySeriesCounter() << ") RECORDS: " << tape2->getRecordsCounter() << "\n";
 }
 
@@ -58,15 +58,17 @@ void DistributionManager::finalizeDistribution()
 
 void DistributionManager::addDummySeries()
 {
-	std::pair<int, int> seriesCountToDistribute = findFibonacciPair(tape1->getSeriesCounter(), tape2->getSeriesCounter());
-
-	if (tape1->getSeriesCounter() == seriesCountToDistribute.first) {
-		tape2->setDummySeriesCounter(seriesCountToDistribute.second - tape2->getSeriesCounter());
-		tape2->setSeriesCounter(seriesCountToDistribute.second);
+	if (isFirstTapeTurn) {
+		tape1->setDummySeriesCounter(numberOfSeriesForTape - tape1->getSeriesCounter());
+		tape1->setSeriesCounter(numberOfSeriesForTape);
+	}
+	else {
+		tape2->setDummySeriesCounter(numberOfSeriesForTape - tape2->getSeriesCounter());
+		tape2->setSeriesCounter(numberOfSeriesForTape);
 	}
 }
 
-std::pair<int, int> DistributionManager::findFibonacciPair(int firstSeriesCounter, int secondSeriesCounter)
+int DistributionManager::findFibonacciNumberOfSeries(const int& firstSeriesCounter, const int& secondSeriesCounter)
 {
 	int a = 0, b = 1;
 	int seriesCount = firstSeriesCounter + secondSeriesCounter;
@@ -75,7 +77,7 @@ std::pair<int, int> DistributionManager::findFibonacciPair(int firstSeriesCounte
 		a = b;
 		b = temp;
 	}
-	return std::pair<int, int>(a, b);
+	return b;
 }
 
 void DistributionManager::writeRecord(const Record& record)
@@ -115,15 +117,11 @@ void DistributionManager::incrementSeriesCounters()
 
 void DistributionManager::manageTapeTurn()
 {
-	std::pair<int, int> seriesCountToDistribute = findFibonacciPair(tape1->getSeriesCounter(), tape2->getSeriesCounter());
+	int tape1SeiresCounter = tape1->getSeriesCounter();
+	int tape2SeriesCounter = tape2->getSeriesCounter();
 
-	if (tape1->getSeriesCounter() == seriesCountToDistribute.second) {
-		isFirstTapeTurn = false;
-	}
-	else if (tape2->getSeriesCounter() == seriesCountToDistribute.second) {
-		isFirstTapeTurn = true;
-	}
-	else {
+	if (tape2SeriesCounter == numberOfSeriesForTape || tape1SeiresCounter == numberOfSeriesForTape) {
+		numberOfSeriesForTape = findFibonacciNumberOfSeries(tape1SeiresCounter, tape2SeriesCounter);
 		isFirstTapeTurn = !isFirstTapeTurn;
 	}
  }
