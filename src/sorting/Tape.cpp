@@ -72,6 +72,17 @@ void Tape::incrementSeriesCounter()
 	seriesCounter++;
 }
 
+bool Tape::decrementSeriesCounter()
+{
+	if (seriesCounter > 0) {
+		seriesCounter--;
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 void Tape::incrementRecordsCounter()
 {
 	recordsCounter++;

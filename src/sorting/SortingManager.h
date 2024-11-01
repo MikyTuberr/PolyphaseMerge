@@ -1,5 +1,6 @@
 #pragma once
 #include "DistributionManager.h"
+#include "PolyphaseSorter.h"
 #include <filesystem>
 
 class SortingManager

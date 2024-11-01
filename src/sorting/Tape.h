@@ -20,6 +20,7 @@ public:
 	bool read(std::vector<Record>& records);
 
 	void incrementSeriesCounter();
+	bool decrementSeriesCounter();
 	void incrementRecordsCounter();
 
 	int getSeriesCounter() const;

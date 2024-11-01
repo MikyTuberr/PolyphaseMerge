@@ -21,7 +21,7 @@ void DistributionManager::distributeSeriesWithFibonacci()
 
 void DistributionManager::processRecord(const Record& record)
 {
-	//record.print();
+	record.print();
 
 	if (!isFirstRecord) {
 		writeRecord(previousRecord);
@@ -123,7 +123,10 @@ void DistributionManager::manageTapeTurn()
 	else if (tape2->getSeriesCounter() == seriesCountToDistribute.second) {
 		isFirstTapeTurn = true;
 	}
-}
+	else {
+		isFirstTapeTurn = !isFirstTapeTurn;
+	}
+ }
 
 DistributionManager::DistributionManager(Tape* read_tape, Tape* tape1, Tape* tape2)
 {
