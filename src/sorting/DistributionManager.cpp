@@ -21,7 +21,7 @@ void DistributionManager::distributeSeriesWithFibonacci()
 
 void DistributionManager::processRecord(const Record& record)
 {
-	record.print();
+	//record.print();
 
 	if (!isFirstRecord) {
 		writeRecord(previousRecord);

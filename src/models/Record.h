@@ -21,6 +21,7 @@ public:
 	bool operator>(const Record& other) const;
 	bool operator<=(const Record& other) const;
 	bool operator>=(const Record& other) const;
+	bool operator!=(const Record& other) const;
 private:
 	Parallelogram parallelogram;
 };

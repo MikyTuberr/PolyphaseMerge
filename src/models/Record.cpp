@@ -44,3 +44,8 @@ bool Record::operator>=(const Record& other) const
 {
     return parallelogram >= other.getParallelogram();
 }
+
+bool Record::operator!=(const Record& other) const
+{
+    return parallelogram != other.getParallelogram();
+}

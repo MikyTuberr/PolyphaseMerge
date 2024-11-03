@@ -24,9 +24,27 @@ void SortingManager::sortDataFromFile(const std::string& read_filename, const st
     tape1.close();
     tape2.close();
 
-    outputTape.open({ std::ios::binary, std::ios::out, std::ios::in, std::ios::trunc });
+    read_tape.open({ std::ios::binary, std::ios::in });
+    outputTape.open({ std::ios::binary, std::ios::in });
+    tape1.open({ std::ios::binary, std::ios::in });
+    tape2.open({ std::ios::binary, std::ios::in });
+
+    /*std::cout << "\n\n================================TAPE 1================================\n\n\n";
+    printRecords(&tape1);
+    std::cout << "\n\n================================TAPE 1================================\n\n";
+    std::cout << "\n\n================================TAPE 2================================\n\n\n";
+    printRecords(&tape2);
+    std::cout << "\n\n================================TAPE 2================================\n\n";*/
+
+    read_tape.close();
+    outputTape.close();
+    tape1.close();
+    tape2.close();
+
+    outputTape.open({ std::ios::binary, std::ios::out, std::ios::in });
     tape1.open({ std::ios::binary, std::ios::out, std::ios::in });
     tape2.open({ std::ios::binary, std::ios::out, std::ios::in });
+
 
     std::cout << "\n*************** STARTING SORTING ***************\n\n";
 
@@ -39,17 +57,25 @@ void SortingManager::sortDataFromFile(const std::string& read_filename, const st
     tape1.close();
     tape2.close();
 
+    read_tape.open({ std::ios::binary, std::ios::in });
+    outputTape.open({ std::ios::binary, std::ios::in });
+    tape1.open({ std::ios::binary, std::ios::in });
+    tape2.open({ std::ios::binary, std::ios::in });
 
     std::cout << "\n\n================================TAPE 1================================\n\n\n";
-    printRecords(tape1_filename);
+    printRecords(&tape1);
     std::cout << "\n\n================================TAPE 1================================\n\n";
     std::cout << "\n\n================================TAPE 2================================\n\n\n";
-    printRecords(tape2_filename);
+    printRecords(&tape2);
     std::cout << "\n\n================================TAPE 2================================\n\n";
     std::cout << "\n\n================================TAPE 3================================\n\n\n";
-    printRecords("src/data/tape3.bin");
+    printRecords(&outputTape);
     std::cout << "\n\n================================TAPE 3================================\n\n";
 
+    read_tape.close();
+    outputTape.close();
+    tape1.close();
+    tape2.close();
 
     std::filesystem::remove(tape1_filename);
     std::filesystem::remove(tape2_filename);

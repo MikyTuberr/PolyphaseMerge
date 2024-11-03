@@ -21,7 +21,9 @@ public:
 
 	void incrementSeriesCounter();
 	bool decrementSeriesCounter();
+	bool decrementDummySeriesCounter();
 	void incrementRecordsCounter();
+	bool decrementRecordsCounter();
 
 	int getSeriesCounter() const;
 	int getDummySeriesCounter() const;
@@ -31,6 +33,7 @@ public:
 	void setSeriesCounter(int seriesCount);
 	void setDummySeriesCounter(int dummySeriesCount);
 	void setTail(Record record);
+	void resetPosition();
 
 private:
 	FileIO io;

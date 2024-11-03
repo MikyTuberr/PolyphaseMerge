@@ -58,6 +58,12 @@ void FileIO::write(std::fstream& file, const std::vector<Record>& records) {
     }
 }
 
+void FileIO::resetPosition()
+{
+    this->isEof = false;
+    this->position = 0;
+}
+
 size_t FileIO::adjustBytesToRead(std::fstream& file)
 {
     file.seekg(0, std::ios::end);

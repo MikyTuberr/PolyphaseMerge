@@ -64,7 +64,7 @@ bool Tape::read(std::vector<Record>& records)
 		return false;
 	}
 
-	return io.read(file, records);;
+	return io.read(file, records);
 }
 
 void Tape::incrementSeriesCounter()
@@ -83,9 +83,31 @@ bool Tape::decrementSeriesCounter()
 	}
 }
 
+bool Tape::decrementDummySeriesCounter()
+{
+	if (dummySeriesCounter > 0) {
+		dummySeriesCounter--;
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 void Tape::incrementRecordsCounter()
 {
 	recordsCounter++;
+}
+
+bool Tape::decrementRecordsCounter()
+{
+	if (recordsCounter > 0) {
+		recordsCounter--;
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 int Tape::getSeriesCounter() const
@@ -121,4 +143,9 @@ void Tape::setDummySeriesCounter(int dummySeriesCount)
 void Tape::setTail(Record record)
 {
 	tail = record;
+}
+
+void Tape::resetPosition()
+{
+	io.resetPosition();
 }

@@ -33,6 +33,7 @@ public:
 	bool operator>(const Parallelogram& other) const;
 	bool operator<=(const Parallelogram& other) const;
 	bool operator>=(const Parallelogram& other) const;
+	bool operator!=(const Parallelogram& other) const;
 
 private:
 	ParallelogramContent content;
