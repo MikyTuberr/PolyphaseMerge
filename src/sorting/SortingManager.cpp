@@ -24,27 +24,9 @@ void SortingManager::sortDataFromFile(const std::string& read_filename, const st
     tape1.close();
     tape2.close();
 
-    read_tape.open({ std::ios::binary, std::ios::in });
-    outputTape.open({ std::ios::binary, std::ios::in });
-    tape1.open({ std::ios::binary, std::ios::in });
-    tape2.open({ std::ios::binary, std::ios::in });
-
-    std::cout << "\n\n================================TAPE 1================================\n\n\n";
-    printRecords(&tape1);
-    std::cout << "\n\n================================TAPE 1================================\n\n";
-    std::cout << "\n\n================================TAPE 2================================\n\n\n";
-    printRecords(&tape2);
-    std::cout << "\n\n================================TAPE 2================================\n\n";
-
-    read_tape.close();
-    outputTape.close();
-    tape1.close();
-    tape2.close();
-
     outputTape.open({ std::ios::binary, std::ios::out, std::ios::in });
     tape1.open({ std::ios::binary, std::ios::out, std::ios::in });
     tape2.open({ std::ios::binary, std::ios::out, std::ios::in });
-
 
     std::cout << "\n*************** STARTING SORTING ***************\n\n";
 

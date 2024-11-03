@@ -1,20 +1,19 @@
 #pragma once
 #include "../models/Record.h"
 #include "Tape.h"
+#include "../tools/PrintManager.h"
 
 class PolyphaseSorter
 {
 private:
 	int getNumberOfSeriesToMerge();
-	bool readBlocksFromTapes();
 	bool isEndOfSerie(const std::vector<Record>& records, size_t index);
 	void writeToOutputTape(Tape* tape, const std::vector<Record>& records, Record& record, size_t& index, bool& isSerieEndFlag);
 	void compareRecords(size_t& i, size_t& j);
 	void handleSerieMergeEnd(int& numberOfSeriesToMerge);
-	void handleTapeEnd(Tape* tape, std::vector<Record>& records, size_t& index, Record& currentRecord, bool& serieEndFlag, int& numberOfSeriesToMerge);
 	void processBlocks(int& numberOfSeriesToMerge);
 	void swapTapes();
-	void handleRemainingRecords();
+	void resetTapeStates();
 public:
 	PolyphaseSorter(Tape* tape1, Tape* tape2, Tape * outputTape);
 	void sortTapesWithFibonacci();
