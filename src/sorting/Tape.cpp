@@ -67,6 +67,28 @@ bool Tape::read(std::vector<Record>& records)
 	return io.read(file, records);
 }
 
+void Tape::print()
+{
+	if (!isOpen()) {
+		std::cerr << "File is not opened!\n";
+		return;
+	}
+
+	bool stop = true;
+	std::streampos tmpPos = io.getPosition();
+	bool tmpEof = io.getEof();
+	io.resetPosition();
+	while (stop) {
+		std::vector<Record> records;
+		stop = read(records);
+		for (const auto& record : records) {
+			record.print();
+		}
+	}
+	io.setEof(tmpEof);
+	io.setPosition(tmpPos);
+}
+
 void Tape::incrementSeriesCounter()
 {
 	seriesCounter++;

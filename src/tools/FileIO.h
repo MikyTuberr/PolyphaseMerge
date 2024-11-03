@@ -17,8 +17,12 @@ public:
     bool read(std::fstream& file, std::vector<Record>& records);
     void write(std::fstream& file, const std::vector<Record>& records);
 
+    std::streampos getPosition() const;
+    void setPosition(std::streampos position);
     void resetPosition();
 
+    bool getEof() const;
+    void setEof(bool eof);
 private:
     bool isEof = false;
     std::streampos position = 0;

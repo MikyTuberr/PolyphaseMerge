@@ -18,6 +18,7 @@ public:
 	void close();
 	bool write(const std::vector<Record>& records);
 	bool read(std::vector<Record>& records);
+	void print();
 
 	void incrementSeriesCounter();
 	bool decrementSeriesCounter();

@@ -29,12 +29,12 @@ void SortingManager::sortDataFromFile(const std::string& read_filename, const st
     tape1.open({ std::ios::binary, std::ios::in });
     tape2.open({ std::ios::binary, std::ios::in });
 
-    /*std::cout << "\n\n================================TAPE 1================================\n\n\n";
+    std::cout << "\n\n================================TAPE 1================================\n\n\n";
     printRecords(&tape1);
     std::cout << "\n\n================================TAPE 1================================\n\n";
     std::cout << "\n\n================================TAPE 2================================\n\n\n";
     printRecords(&tape2);
-    std::cout << "\n\n================================TAPE 2================================\n\n";*/
+    std::cout << "\n\n================================TAPE 2================================\n\n";
 
     read_tape.close();
     outputTape.close();
@@ -53,26 +53,6 @@ void SortingManager::sortDataFromFile(const std::string& read_filename, const st
 
     std::cout << "\n*************** FINISHING SORTING ***************\n";
 
-    outputTape.close();
-    tape1.close();
-    tape2.close();
-
-    read_tape.open({ std::ios::binary, std::ios::in });
-    outputTape.open({ std::ios::binary, std::ios::in });
-    tape1.open({ std::ios::binary, std::ios::in });
-    tape2.open({ std::ios::binary, std::ios::in });
-
-    std::cout << "\n\n================================TAPE 1================================\n\n\n";
-    printRecords(&tape1);
-    std::cout << "\n\n================================TAPE 1================================\n\n";
-    std::cout << "\n\n================================TAPE 2================================\n\n\n";
-    printRecords(&tape2);
-    std::cout << "\n\n================================TAPE 2================================\n\n";
-    std::cout << "\n\n================================TAPE 3================================\n\n\n";
-    printRecords(&outputTape);
-    std::cout << "\n\n================================TAPE 3================================\n\n";
-
-    read_tape.close();
     outputTape.close();
     tape1.close();
     tape2.close();

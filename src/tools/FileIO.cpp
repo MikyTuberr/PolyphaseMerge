@@ -58,10 +58,30 @@ void FileIO::write(std::fstream& file, const std::vector<Record>& records) {
     }
 }
 
+std::streampos FileIO::getPosition() const
+{
+    return this->position;
+}
+
+void FileIO::setPosition(std::streampos position)
+{
+    this->position = position;
+}
+
 void FileIO::resetPosition()
 {
     this->isEof = false;
     this->position = 0;
+}
+
+bool FileIO::getEof() const
+{
+    return isEof;
+}
+
+void FileIO::setEof(bool eof)
+{
+    this->isEof = eof;
 }
 
 size_t FileIO::adjustBytesToRead(std::fstream& file)
