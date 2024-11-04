@@ -1,4 +1,5 @@
 #pragma once
+#include "PrintManager.h"
 #include "../config.h"
 #include "../models/Record.h"
 #include <fstream>

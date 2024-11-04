@@ -9,16 +9,12 @@ bool FileIO::read(std::fstream& file, std::vector<Record>& records)
     size_t bytesToRead = adjustBytesToRead(file);
 
     if (this->isEof) {
-        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
-        std::cout << "~~~ End of file detected, stopping read operation. ~~~\n";
-        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        //PrintManager::printEOFMessage();
         return false;
     }
 
     if (bytesToRead == 0) {
-        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
-        std::cout << "~~~ Insufficient bytes to read a full record.\n. ~~~\n";
-        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        //PrintManager::printInsufficientBytesMessage();
         return false;
     }
 
@@ -101,17 +97,13 @@ size_t FileIO::adjustBytesToRead(std::fstream& file)
             return bytesToRead;
         }
 
-        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
-        std::cout << "~~~ Adjusting read bytes to " << bytesToRead <<", due to insufficient block size (" << blockSize << "). ~~~\n";
-        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        //PrintManager::printAdjustedBytesMessage(bytesToRead, blockSize);
     }
 
     size_t bytesToReadMultiple = (bytesToRead / recordSize) * recordSize;
 
     if (bytesToReadMultiple != bytesToRead) {
-        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
-        std::cout << "~~~ Bytes to read (" << bytesToRead << ") not a multiple of record size. Adjusted to " << bytesToReadMultiple << ". ~~~\n";
-        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        //PrintManager::printAdjustedRecordSizeMessage(bytesToRead, bytesToReadMultiple);
         bytesToRead = bytesToReadMultiple;
     }
 

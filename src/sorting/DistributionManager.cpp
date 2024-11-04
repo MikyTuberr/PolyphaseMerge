@@ -15,8 +15,8 @@ void DistributionManager::distributeSeriesWithFibonacci()
 
 	finalizeDistribution();
 
-	std::cout << "\n\nFIRST TAPE:\nSERIES: " << tape1->getSeriesCounter() << " (" << tape1->getDummySeriesCounter() << ") RECORDS: " << tape1->getRecordsCounter() << "\n";
-	std::cout << "\nSECOND TAPE\nSERIES: " << tape2->getSeriesCounter() << " (" << tape2->getDummySeriesCounter() << ") RECORDS: " << tape2->getRecordsCounter() << "\n";
+	PrintManager::printTapeContentMessage("TAPE 1", tape1->getSeriesCounter(), tape1->getDummySeriesCounter(), tape1->getRecordsCounter());
+	PrintManager::printTapeContentMessage("TAPE 2", tape2->getSeriesCounter(), tape2->getDummySeriesCounter(), tape2->getRecordsCounter());
 }
 
 void DistributionManager::processRecord(const Record& record)

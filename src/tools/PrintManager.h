@@ -1,12 +1,20 @@
 #pragma once
-#include "../sorting/Tape.h"
+#include <iostream>
 
 class PrintManager
 {
 public:
-	static void displayPhaseHeader(const int& phaseNumber);
-	static bool askUserForDisplay();
-	static void displayTapeState(Tape* tape1, Tape* tape2, Tape* outputTape);
-	static void displaySortedTape(Tape* outputTape, const int& phaseNumber);
+	static void printStageHeader(const std::string& title);
+
+	static void printPhaseHeader(const int& phaseNumber);
+	static bool promptUserDisplayDecision();
+
+	static void printTapeHeader(const std::string& header);
+	static void printTapeContentMessage(const std::string& tapeName, const int& seriesNumber, const int& dummySeriesNumber, const int& recordsNumber);
+
+	static void printAdjustedBytesMessage(const int& bytesToRead, const int& blockSize);
+	static void printAdjustedRecordSizeMessage(const int& bytesToRead, const int& bytesToReadMultiple);
+	static void printInsufficientBytesMessage();
+	static void printEOFMessage();
 };
 

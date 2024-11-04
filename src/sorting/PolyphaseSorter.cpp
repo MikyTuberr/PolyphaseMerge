@@ -123,9 +123,6 @@ void PolyphaseSorter::swapTapes()
 		tape2 = temp;
 	}
 	//std::swap(tape1, tape2);
-	outputTape->close();
-	outputTape->resetPosition();
-	outputTape->open({ std::ios::binary, std::ios::out, std::ios::in, std::ios::trunc });
 }
 
 void PolyphaseSorter::resetTapeStates() {
@@ -133,6 +130,9 @@ void PolyphaseSorter::resetTapeStates() {
 	tape1CurrentRecord = Record();
 	isTape1SerieEnd = false;
 	isTape2SerieEnd = false;
+	outputTape->close();
+	outputTape->resetPosition();
+	outputTape->open({ std::ios::binary, std::ios::out, std::ios::in, std::ios::trunc });
 }
 
 void PolyphaseSorter::sortTapesWithFibonacci()
@@ -144,7 +144,7 @@ void PolyphaseSorter::sortTapesWithFibonacci()
 		int numberOfSeriesToMerge = getNumberOfSeriesToMerge();
 
 		if (shouldPrintPhaseHeader) {
-			PrintManager::displayPhaseHeader(phaseNumber);
+			PrintManager::printPhaseHeader(phaseNumber);
 			shouldPrintPhaseHeader = false;
 		}
 
@@ -157,11 +157,16 @@ void PolyphaseSorter::sortTapesWithFibonacci()
 		
 		if (numberOfSeriesToMerge == 0) {
 
-			if (PrintManager::askUserForDisplay()) {
-				PrintManager::displayTapeState(tape1, tape2, outputTape);
+			if (PrintManager::promptUserDisplayDecision()) {
+				PrintManager::printTapeHeader("TAPE 1");
+				tape1->print();
+				PrintManager::printTapeHeader("TAPE 2");
+				tape2->print();
+				PrintManager::printTapeHeader("TAPE 3 (OUTPUT)");
+				outputTape->print();
 			}
 
-			PrintManager::displayPhaseHeader(phaseNumber);
+			PrintManager::printPhaseHeader(phaseNumber);
 			shouldPrintPhaseHeader = true;
 
 			swapTapes();
@@ -170,6 +175,7 @@ void PolyphaseSorter::sortTapesWithFibonacci()
 		}
 	}
 
-	PrintManager::displayPhaseHeader(phaseNumber);
-	PrintManager::displaySortedTape(outputTape, phaseNumber);
+	PrintManager::printPhaseHeader(phaseNumber);
+	PrintManager::printTapeHeader("SORTED TAPE");
+	outputTape->print();
 }
