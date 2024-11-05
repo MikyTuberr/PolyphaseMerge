@@ -20,7 +20,6 @@ bool PolyphaseSorter::isEndOfSerie(const std::vector<Record>& records, size_t in
 
 void PolyphaseSorter::writeToOutputTape(Tape* tape, const std::vector<Record>& records, Record& record, size_t& index, bool& isSerieEndFlag) {
 	outputTape->write({ record });
-	tape->decrementRecordsCounter();
 	//record.print();
 	isSerieEndFlag = isEndOfSerie(records, index);
 	index++;
@@ -38,17 +37,45 @@ void PolyphaseSorter::compareRecords(size_t& i, size_t& j)
 
 void PolyphaseSorter::handleSerieMergeEnd(int& numberOfSeriesToMerge) {
 	tape1->decrementSeriesCounter();
+	tape1->decrementDummySeriesCounter();
 	tape2->decrementSeriesCounter();
+	tape2->decrementDummySeriesCounter();
 	outputTape->incrementSeriesCounter();
 	numberOfSeriesToMerge--;
 	isTape1SerieEnd = false;
 	isTape2SerieEnd = false;
 }
 
+void PolyphaseSorter::readTape(Tape* tape, std::vector<Record>& records, size_t& index, bool& readTape)
+{
+	if (readTape && index == records.size()) {
+		records = std::vector<Record>();
+		index = 0;
+		readTape = tape->read(records);
+	}
+}
+
+void PolyphaseSorter::checkTapeState(std::vector<Record>& records, Record& currentRecord, size_t& index,
+	int dummySeriesCount, bool& isSerieEnd, bool& readTape)
+{
+	if (!readTape) {
+		isSerieEnd = true;
+		currentRecord = Record();
+	}
+	else if (dummySeriesCount > 0) {
+		isSerieEnd = true;
+	}
+	else if (index == 0 && currentRecord != records[index]) {
+		isSerieEnd = currentRecord > records[index];
+		currentRecord = records[index];
+	}
+	else {
+		currentRecord = records[index];
+	}
+}
+
 // TODO 
 // dummy series
-// tests!!!!!!!!!!!!
-// cleanup code!!!!
 void PolyphaseSorter::processBlocks(int& numberOfSeriesToMerge)
 {
 	bool read1Tape = true;
@@ -56,46 +83,12 @@ void PolyphaseSorter::processBlocks(int& numberOfSeriesToMerge)
 
 	while (numberOfSeriesToMerge > 0 && (read1Tape || read2Tape)) {
 
-		// read
-		if (read1Tape && tape1Index == tape1Records.size()) {
-			tape1Records = std::vector<Record>();
-			tape1Index = 0;
-			read1Tape = tape1->read(tape1Records);
-		}
+		readTape(tape1, tape1Records, tape1Index, read1Tape);
+		readTape(tape2, tape2Records, tape2Index, read2Tape);
 
-		if (read2Tape && tape2Index == tape2Records.size()) {
-			tape2Records = std::vector<Record>();
-			tape2Index = 0;
-			read2Tape = tape2->read(tape2Records);
-		}
+		checkTapeState(tape1Records, tape1CurrentRecord, tape1Index, tape1->getDummySeriesCounter(), isTape1SerieEnd, read1Tape);
+		checkTapeState(tape2Records, tape2CurrentRecord, tape2Index, tape2->getDummySeriesCounter(), isTape2SerieEnd, read2Tape);
 
-		// check serie from previous block
-		if (!read1Tape) {
-			isTape1SerieEnd = true;
-			tape1CurrentRecord = Record();
-		}
-		else if (tape1Index == 0 && tape1CurrentRecord != tape1Records[tape1Index]) {
-			isTape1SerieEnd = tape1CurrentRecord > tape1Records[tape1Index];
-			tape1CurrentRecord = tape1Records[tape1Index];
-		}
-		else {
-			tape1CurrentRecord = tape1Records[tape1Index];
-		}
-
-		if (!read2Tape) {
-			isTape2SerieEnd = true;
-			tape2CurrentRecord = Record();
-		}
-		else if (tape2Index == 0 && tape2CurrentRecord != tape2Records[tape2Index]) {
-			isTape2SerieEnd = tape2CurrentRecord > tape2Records[tape2Index];
-			tape2CurrentRecord = tape2Records[tape2Index];
-		}
-		else {
-			tape2CurrentRecord = tape2Records[tape2Index];
-		}
-		
-
-		// serie sort alg
 		if (!isTape1SerieEnd && !isTape2SerieEnd) {
 			compareRecords(tape1Index, tape2Index);
 		}
@@ -105,7 +98,7 @@ void PolyphaseSorter::processBlocks(int& numberOfSeriesToMerge)
 		else if (!isTape1SerieEnd && isTape2SerieEnd) {
 			writeToOutputTape(tape1, tape1Records, tape1CurrentRecord, tape1Index, isTape1SerieEnd);
 		}
-		else if (isTape1SerieEnd && isTape2SerieEnd) {
+		else {
 			handleSerieMergeEnd(numberOfSeriesToMerge);
 		}
 	}
@@ -122,7 +115,6 @@ void PolyphaseSorter::swapTapes()
 	else {
 		tape2 = temp;
 	}
-	//std::swap(tape1, tape2);
 }
 
 void PolyphaseSorter::resetTapeStates() {
@@ -135,47 +127,68 @@ void PolyphaseSorter::resetTapeStates() {
 	outputTape->open({ std::ios::binary, std::ios::out, std::ios::in, std::ios::trunc });
 }
 
+void PolyphaseSorter::printTapeState() {
+	if (PrintManager::promptUserDisplayTapesDecision()) {
+		PrintManager::printTapeHeader("TAPE 1");
+		tape1->printContent();
+		PrintManager::printTapeHeader("TAPE 1");
+		PrintManager::printTapeHeader("TAPE 2");
+		tape2->printContent();
+		PrintManager::printTapeHeader("TAPE 2");
+		PrintManager::printTapeHeader("TAPE 3 (OUTPUT)");
+		outputTape->printContent();
+		PrintManager::printTapeHeader("TAPE 3 (OUTPUT)");
+	}
+}
+
+bool PolyphaseSorter::areTapesEmpty() {
+	return tape1->getSeriesCounter() == 0 && tape2->getSeriesCounter() == 0;
+}
+
+void PolyphaseSorter::handlePhaseEnd(int& phaseNumber, bool& shouldPrintPhaseHeader, const bool& shouldPrintPhases) 
+{
+	if (shouldPrintPhases) {
+		PrintManager::printPhaseHeader(phaseNumber);
+	}
+	shouldPrintPhaseHeader = true;
+	phaseNumber++;
+
+	swapTapes();
+	resetTapeStates();
+}
+
+void PolyphaseSorter::handlePhaseHeaderPrint(const int& phaseNumber, bool& shouldPrintPhaseHeader, const bool& shouldPrintPhases) 
+{
+	if (shouldPrintPhases) {
+		PrintManager::printPhaseHeader(phaseNumber);
+		printTapeState();
+		//PrintManager::printPhaseHeader(phaseNumber);
+		shouldPrintPhaseHeader = true;
+	}
+	shouldPrintPhaseHeader = false;
+}
+
+//display phasesNumber, pages written, pages read, write whats in buffer
 void PolyphaseSorter::sortTapesWithFibonacci()
 {
 	int phaseNumber = 1;
-	bool shouldPrintPhaseHeader = true;
+	bool shouldPrintPhases = PrintManager::promptUserDisplayPhasesDecision();
+	bool shouldPrintPhaseHeader = shouldPrintPhases;
 
 	while (true) {
 		int numberOfSeriesToMerge = getNumberOfSeriesToMerge();
 
-		if (shouldPrintPhaseHeader) {
-			PrintManager::printPhaseHeader(phaseNumber);
-			shouldPrintPhaseHeader = false;
-		}
+		if (shouldPrintPhaseHeader) handlePhaseHeaderPrint(phaseNumber, shouldPrintPhaseHeader, shouldPrintPhases);
 
 		processBlocks(numberOfSeriesToMerge);
-	
 
-		if (tape1->getSeriesCounter() == 0 && tape2->getSeriesCounter() == 0) {
-			break;
-		}
+		if (areTapesEmpty()) break;
 		
-		if (numberOfSeriesToMerge == 0) {
-
-			if (PrintManager::promptUserDisplayDecision()) {
-				PrintManager::printTapeHeader("TAPE 1");
-				tape1->print();
-				PrintManager::printTapeHeader("TAPE 2");
-				tape2->print();
-				PrintManager::printTapeHeader("TAPE 3 (OUTPUT)");
-				outputTape->print();
-			}
-
-			PrintManager::printPhaseHeader(phaseNumber);
-			shouldPrintPhaseHeader = true;
-
-			swapTapes();
-			resetTapeStates();
-			phaseNumber++;
-		}
+		if (numberOfSeriesToMerge == 0) handlePhaseEnd(phaseNumber, shouldPrintPhaseHeader, shouldPrintPhases);
 	}
 
-	PrintManager::printPhaseHeader(phaseNumber);
-	PrintManager::printTapeHeader("SORTED TAPE");
-	outputTape->print();
+	if (shouldPrintPhases) {
+		printTapeState();
+		handlePhaseHeaderPrint(phaseNumber, shouldPrintPhaseHeader, shouldPrintPhases);
+	}
 }

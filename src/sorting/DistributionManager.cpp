@@ -14,9 +14,6 @@ void DistributionManager::distributeSeriesWithFibonacci()
 	}
 
 	finalizeDistribution();
-
-	PrintManager::printTapeContentMessage("TAPE 1", tape1->getSeriesCounter(), tape1->getDummySeriesCounter(), tape1->getRecordsCounter());
-	PrintManager::printTapeContentMessage("TAPE 2", tape2->getSeriesCounter(), tape2->getDummySeriesCounter(), tape2->getRecordsCounter());
 }
 
 void DistributionManager::processRecord(const Record& record)

@@ -19,21 +19,19 @@ public:
 	bool write(const std::vector<Record>& records);
 	bool read(std::vector<Record>& records);
 	void print();
+	void printContent();
 
 	void incrementSeriesCounter();
 	bool decrementSeriesCounter();
 	bool decrementDummySeriesCounter();
-	void incrementRecordsCounter();
-	bool decrementRecordsCounter();
 
 	int getSeriesCounter() const;
 	int getDummySeriesCounter() const;
-	int getRecordsCounter() const;
 	Record getTail() const;
 
-	void setSeriesCounter(int seriesCount);
-	void setDummySeriesCounter(int dummySeriesCount);
-	void setTail(Record record);
+	void setSeriesCounter(const int seriesCount);
+	void setDummySeriesCounter(const int dummySeriesCount);
+	void setTail(const Record record);
 	void resetPosition();
 
 private:
@@ -44,6 +42,5 @@ private:
 	bool _isEmpty = true;
 	int seriesCounter = 0;
 	int dummySeriesCounter = 0;
-	int recordsCounter = 0;
 };
 

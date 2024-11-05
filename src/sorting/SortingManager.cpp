@@ -6,12 +6,23 @@ void SortingManager::distribute(Tape* read_tape, Tape* tape1, Tape* tape2)
     tape1->open({ std::ios::out });
     tape2->open({ std::ios::out });
 
+    PrintManager::printTapeHeader("FILE");
+    read_tape->print();
+    PrintManager::printTapeHeader("FILE");
+
     PrintManager::printStageHeader("STARTING DISTRIBUTION");
 
     DistributionManager distributionManager(read_tape, tape1, tape2);
     distributionManager.distributeSeriesWithFibonacci();
 
     PrintManager::printStageHeader("FINISHING DISTRIBUTION");
+
+    PrintManager::printTapeHeader("TAPE 1");
+    PrintManager::printTapeContentMessage(tape1->getSeriesCounter(), tape1->getDummySeriesCounter());
+    PrintManager::printTapeHeader("TAPE 1");
+    PrintManager::printTapeHeader("TAPE 2");
+    PrintManager::printTapeContentMessage(tape2->getSeriesCounter(), tape2->getDummySeriesCounter());
+    PrintManager::printTapeHeader("TAPE 2");
 
     read_tape->close();
     tape1->close();
@@ -33,6 +44,10 @@ void SortingManager::sort(Tape* tape1, Tape* tape2, Tape* outputTape)
     polyphaseSorter.sortTapesWithFibonacci();
 
     PrintManager::printStageHeader("FINISHING SORTING");
+
+    PrintManager::printTapeHeader("SORTED FILE");
+    outputTape->print();
+    PrintManager::printTapeHeader("SORTED FILE");
 
     outputTape->close();
     tape1->close();

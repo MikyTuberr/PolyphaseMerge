@@ -53,7 +53,6 @@ bool Tape::write(const std::vector<Record>& records)
 		_isEmpty = false;
 	}
 	io.write(file, records);
-	incrementRecordsCounter();
 	return true;
 }
 
@@ -89,6 +88,11 @@ void Tape::print()
 	io.setPosition(tmpPos);
 }
 
+void Tape::printContent()
+{
+	PrintManager::printTapeContentMessage(seriesCounter, dummySeriesCounter);
+}
+
 void Tape::incrementSeriesCounter()
 {
 	seriesCounter++;
@@ -116,22 +120,6 @@ bool Tape::decrementDummySeriesCounter()
 	}
 }
 
-void Tape::incrementRecordsCounter()
-{
-	recordsCounter++;
-}
-
-bool Tape::decrementRecordsCounter()
-{
-	if (recordsCounter > 0) {
-		recordsCounter--;
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
 int Tape::getSeriesCounter() const
 {
 	return seriesCounter;
@@ -142,30 +130,26 @@ int Tape::getDummySeriesCounter() const
 	return dummySeriesCounter;
 }
 
-int Tape::getRecordsCounter() const
-{
-	return recordsCounter;
-}
-
 Record Tape::getTail() const
 {
 	return tail;
 }
 
-void Tape::setSeriesCounter(int seriesCount)
+void Tape::setSeriesCounter(const int seriesCount)
 {
 	seriesCounter = seriesCount;
 }
 
-void Tape::setDummySeriesCounter(int dummySeriesCount)
+void Tape::setDummySeriesCounter(const int dummySeriesCount)
 {
 	dummySeriesCounter = dummySeriesCount;
 }
 
-void Tape::setTail(Record record)
+void Tape::setTail(const Record record)
 {
 	tail = record;
 }
+
 
 void Tape::resetPosition()
 {

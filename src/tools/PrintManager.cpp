@@ -2,28 +2,36 @@
 
 void PrintManager::printStageHeader(const std::string& title)
 {
-	std::cout << "\n*************** " << title << " ***************\n\n";
+	std::cout << "\n****************************** " << title << " ******************************\n\n";
 }
 
 void PrintManager::printPhaseHeader(const int& phaseNumber) {
-	std::cout << "\n\n################################ PHASE " << phaseNumber << " ################################\n\n";
+	std::cout << "\n################################ PHASE " << phaseNumber << " ################################\n\n";
 }
 
-bool PrintManager::promptUserDisplayDecision() {
+bool PrintManager::promptUserDisplayPhasesDecision() {
 	char userInput;
-	std::cout << "\nDo you want to display the tape states before moving to the next phase? (y/n): ";
+	std::cout << "Do you want to display the phases? (y/n): ";
+	std::cin >> userInput;
+
+	return (userInput == 'y' || userInput == 'Y');
+}
+
+bool PrintManager::promptUserDisplayTapesDecision() {
+	char userInput;
+	std::cout << "Do you want to display the tape states before moving to the next phase? (y/n): ";
 	std::cin >> userInput;
 
 	return (userInput == 'y' || userInput == 'Y');
 }
 
 void PrintManager::printTapeHeader(const std::string& header) {
-	std::cout << "\n\n================================ " << header << " ================================ = \n\n";
+	std::cout << "\n================================ " << header << " =================================\n\n";
 }
 
-void PrintManager::printTapeContentMessage(const std::string& tapeName, const int& seriesNumber, const int& dummySeriesNumber, const int& recordsNumber)
+void PrintManager::printTapeContentMessage(const int& seriesNumber, const int& dummySeriesNumber)
 {
-	std::cout << "\n\n" << tapeName << ":\nSERIES : " << seriesNumber << " (" << dummySeriesNumber << ") RECORDS : " << recordsNumber << "\n";
+	std::cout << "SERIES : " << seriesNumber << " (" << dummySeriesNumber << ")\n";
 }
 
 void PrintManager::printAdjustedBytesMessage(const int& bytesToRead, const int& blockSize)
