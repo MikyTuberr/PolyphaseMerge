@@ -6,7 +6,8 @@ class PrintManager
 public:
 	static void printStageHeader(const std::string& title);
 
-	static void printPhaseHeader(const int& phaseNumber);
+	static void printPhaseHeader(const int& phaseNumber, const int& tape1Series, const int& tape1DummySeries, 
+		const int& tape2Series, const int& tape2DummySeries, const int& tape3Series, const int& tape3DummySeries);
 	static bool promptUserDisplayPhasesDecision();
 	static bool promptUserDisplayTapesDecision();
 

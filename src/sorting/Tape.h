@@ -9,15 +9,17 @@ class Tape
 public:
 	Tape() = default;
 	Tape(const std::string& filename);
-	~Tape();
+	~Tape() = default;
 
-	bool isOpen() const;
 	bool isEmpty() const;
 
 	bool open(const std::initializer_list<std::ios::openmode> modes);
 	void close();
-	bool write(const std::vector<Record>& records);
+
+	void writeRecord(const Record& record);
+	void flush();
 	bool read(std::vector<Record>& records);
+
 	void print();
 	void printContent();
 
@@ -34,12 +36,12 @@ public:
 	void setTail(const Record record);
 	void resetPosition();
 
+	size_t getPagesWritten() const;
+	size_t getPagesRead() const;
+
 private:
 	FileIO io;
-	std::string filename;
-	std::fstream file;
 	Record tail;
-	bool _isEmpty = true;
 	int seriesCounter = 0;
 	int dummySeriesCounter = 0;
 };

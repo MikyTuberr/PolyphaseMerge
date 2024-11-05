@@ -1,8 +1,95 @@
 #include "FileIO.h"
 
-bool FileIO::read(std::fstream& file, std::vector<Record>& records)
+FileIO::FileIO(FileIO&& other) noexcept :
+    file(std::move(other.file)),
+    filename(std::move(other.filename)),
+    position(other.position),
+    recordSize(other.recordSize),
+    blockSize(other.blockSize),
+    records(std::move(other.records))
 {
-    if (!file) {
+    //other.position = 0;
+}
+
+FileIO& FileIO::operator=(FileIO && other) noexcept
+{
+    if (this != &other) {
+        if (file.is_open()) {
+            file.close();
+        }
+        file = std::move(other.file);
+        filename = std::move(other.filename);
+        position = other.position;
+        recordSize = other.recordSize;
+        blockSize = other.blockSize;
+        records = std::move(other.records);
+        //other.position = 0;
+        file.close();
+    }
+    return *this;
+}
+
+FileIO::~FileIO()
+{
+    if (file.is_open()) {
+        file.close();
+    }
+}
+
+bool FileIO::isEmpty() const
+{
+    return _isEmpty;
+}
+
+void FileIO::printFile()
+{
+    bool stop = true;
+
+    std::streampos tmpPos = position;
+    bool tmpEof = isEof;
+
+    resetPosition();
+
+    while (stop) {
+        std::vector<Record> records;
+        stop = read(records, false);
+        for (const auto& record : records) {
+            record.print();
+        }
+    }
+
+    isEof = tmpEof;
+    position = tmpPos;
+}
+
+bool FileIO::open(const std::initializer_list<std::ios::openmode> modes)
+{
+    if (file.is_open()) {
+        std::cout << "File already opened, closing.\n";
+        file.close();
+    }
+    std::ios::openmode combinedMode = std::ios::binary;
+    for (auto mode : modes) {
+        combinedMode |= mode;
+    }
+    file.open(filename, combinedMode);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << filename << "\n";
+        return false;
+    }
+    return true;
+}
+
+void FileIO::close()
+{
+    if (file.is_open()) {
+        file.close();
+    }
+}
+
+bool FileIO::read(std::vector<Record>& records, const bool& countPage)
+{
+    if (!file.is_open()) {
         throw std::runtime_error("File is not opened!\n.");
     }
 
@@ -27,12 +114,34 @@ bool FileIO::read(std::fstream& file, std::vector<Record>& records)
     std::streamoff offset = (bytesRead / recordSize) * recordSize;
     position += offset;
 
+    if (countPage) {
+        pagesRead++;
+    }
     return true;
 }
 
-void FileIO::write(std::fstream& file, const std::vector<Record>& records) {
+void FileIO::writeRecord(const Record& record) 
+{
+    if (_isEmpty) {
+		_isEmpty = false;
+	}
 
-    if (!file) {
+    this->records.push_back(record);
+
+    if (this->records.size() >= blockSize / recordSize) {
+        this->flush();
+    }
+}
+
+void FileIO::flush()
+{
+    this->writeBlock();
+    records = std::vector<Record>();
+}
+
+void FileIO::writeBlock() {
+
+    if (!file.is_open()) {
         throw std::runtime_error("File is not opened!\n");
     }
 
@@ -48,20 +157,11 @@ void FileIO::write(std::fstream& file, const std::vector<Record>& records) {
                 }
             }
         }
+        pagesWritten++;
     }
     catch (const std::exception& e) {
         throw e;
     }
-}
-
-std::streampos FileIO::getPosition() const
-{
-    return this->position;
-}
-
-void FileIO::setPosition(std::streampos position)
-{
-    this->position = position;
 }
 
 void FileIO::resetPosition()
@@ -70,14 +170,14 @@ void FileIO::resetPosition()
     this->position = 0;
 }
 
-bool FileIO::getEof() const
+size_t FileIO::getPagesWritten() const
 {
-    return isEof;
+    return this->pagesWritten;
 }
 
-void FileIO::setEof(bool eof)
+size_t FileIO::getPagesRead() const
 {
-    this->isEof = eof;
+    return this->pagesRead;
 }
 
 size_t FileIO::adjustBytesToRead(std::fstream& file)

@@ -39,7 +39,7 @@ void RecordManager::handleRecordCreation(const std::string& filename)
             int numRecords = handleRecordNumberInput();
             RecordFactory::createManualRecords(filename, numRecords);
         }
-        else {
+        else if (option != 3) {
             std::cout << "Invalid option!\n";
         }
     }

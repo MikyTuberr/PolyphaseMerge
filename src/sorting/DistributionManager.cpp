@@ -21,6 +21,7 @@ void DistributionManager::processRecord(const Record& record)
 	//record.print();
 
 	if (!isFirstRecord) {
+		//previousRecord.print();
 		writeRecord(previousRecord);
 		isSerieEnd = previousRecord > record;
 	}
@@ -41,12 +42,15 @@ void DistributionManager::handleSerieEnd(const Record& record)
 		incrementSeriesCounters();
 	}
 	manageTapeTurn();
-	handleSeriesCounters(record);
+	checkIfSerieCoalesced(record);
 }
 
 void DistributionManager::finalizeDistribution()
 {
+	//previousRecord.print();
 	writeRecord(previousRecord);
+	tape1->flush();
+	tape2->flush();
 	if (!isSerieCoalesced) {
 		incrementSeriesCounters();
 	}
@@ -80,16 +84,16 @@ int DistributionManager::findFibonacciNumberOfSeries(const int& firstSeriesCount
 void DistributionManager::writeRecord(const Record& record)
 {
 	if (isFirstTapeTurn) {
-		tape1->write({ record });
+		tape1->writeRecord(record);
 		tape1->setTail(record);
 	}
 	else {
-		tape2->write({ record });
+		tape2->writeRecord(record);
 		tape2->setTail(record);
 	}
 }
 
-void DistributionManager::handleSeriesCounters(const Record& record)
+void DistributionManager::checkIfSerieCoalesced(const Record& record)
 {
 	if (isFirstTapeTurn && !tape1->isEmpty() && record > tape1->getTail()) {
 		isSerieCoalesced = true;

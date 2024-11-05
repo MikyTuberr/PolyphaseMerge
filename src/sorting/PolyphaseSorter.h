@@ -24,7 +24,7 @@ private:
 	void handlePhaseHeaderPrint(const int& phaseNumber, bool& shouldPrintPhaseHeader, const bool& shouldPrintPhases);
 public:
 	PolyphaseSorter(Tape* tape1, Tape* tape2, Tape * outputTape);
-	void sortTapesWithFibonacci();
+	int sortTapesWithFibonacci();
 private:
 	Tape *tape1, *tape2, *outputTape;
 	size_t tape1Index = 0, tape2Index = 0;

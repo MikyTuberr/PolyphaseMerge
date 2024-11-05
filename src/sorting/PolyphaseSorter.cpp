@@ -19,7 +19,7 @@ bool PolyphaseSorter::isEndOfSerie(const std::vector<Record>& records, size_t in
 }
 
 void PolyphaseSorter::writeToOutputTape(Tape* tape, const std::vector<Record>& records, Record& record, size_t& index, bool& isSerieEndFlag) {
-	outputTape->write({ record });
+	outputTape->writeRecord(record);
 	//record.print();
 	isSerieEndFlag = isEndOfSerie(records, index);
 	index++;
@@ -74,8 +74,6 @@ void PolyphaseSorter::checkTapeState(std::vector<Record>& records, Record& curre
 	}
 }
 
-// TODO 
-// dummy series
 void PolyphaseSorter::processBlocks(int& numberOfSeriesToMerge)
 {
 	bool read1Tape = true;
@@ -130,13 +128,13 @@ void PolyphaseSorter::resetTapeStates() {
 void PolyphaseSorter::printTapeState() {
 	if (PrintManager::promptUserDisplayTapesDecision()) {
 		PrintManager::printTapeHeader("TAPE 1");
-		tape1->printContent();
+		tape1->print();
 		PrintManager::printTapeHeader("TAPE 1");
 		PrintManager::printTapeHeader("TAPE 2");
-		tape2->printContent();
+		tape2->print();
 		PrintManager::printTapeHeader("TAPE 2");
 		PrintManager::printTapeHeader("TAPE 3 (OUTPUT)");
-		outputTape->printContent();
+		outputTape->print();
 		PrintManager::printTapeHeader("TAPE 3 (OUTPUT)");
 	}
 }
@@ -148,11 +146,12 @@ bool PolyphaseSorter::areTapesEmpty() {
 void PolyphaseSorter::handlePhaseEnd(int& phaseNumber, bool& shouldPrintPhaseHeader, const bool& shouldPrintPhases) 
 {
 	if (shouldPrintPhases) {
-		PrintManager::printPhaseHeader(phaseNumber);
+		PrintManager::printPhaseHeader(phaseNumber, tape1->getSeriesCounter(), tape1->getDummySeriesCounter(),
+			tape2->getSeriesCounter(), tape2->getDummySeriesCounter(), outputTape->getSeriesCounter(), outputTape->getDummySeriesCounter());
 	}
 	shouldPrintPhaseHeader = true;
 	phaseNumber++;
-
+	outputTape->flush();
 	swapTapes();
 	resetTapeStates();
 }
@@ -160,7 +159,8 @@ void PolyphaseSorter::handlePhaseEnd(int& phaseNumber, bool& shouldPrintPhaseHea
 void PolyphaseSorter::handlePhaseHeaderPrint(const int& phaseNumber, bool& shouldPrintPhaseHeader, const bool& shouldPrintPhases) 
 {
 	if (shouldPrintPhases) {
-		PrintManager::printPhaseHeader(phaseNumber);
+		PrintManager::printPhaseHeader(phaseNumber, tape1->getSeriesCounter(), tape1->getDummySeriesCounter(),
+			tape2->getSeriesCounter(), tape2->getDummySeriesCounter(), outputTape->getSeriesCounter(), outputTape->getDummySeriesCounter());
 		printTapeState();
 		//PrintManager::printPhaseHeader(phaseNumber);
 		shouldPrintPhaseHeader = true;
@@ -169,7 +169,7 @@ void PolyphaseSorter::handlePhaseHeaderPrint(const int& phaseNumber, bool& shoul
 }
 
 //display phasesNumber, pages written, pages read, write whats in buffer
-void PolyphaseSorter::sortTapesWithFibonacci()
+int PolyphaseSorter::sortTapesWithFibonacci()
 {
 	int phaseNumber = 1;
 	bool shouldPrintPhases = PrintManager::promptUserDisplayPhasesDecision();
@@ -186,9 +186,17 @@ void PolyphaseSorter::sortTapesWithFibonacci()
 		
 		if (numberOfSeriesToMerge == 0) handlePhaseEnd(phaseNumber, shouldPrintPhaseHeader, shouldPrintPhases);
 	}
-
+	outputTape->flush();
 	if (shouldPrintPhases) {
-		printTapeState();
-		handlePhaseHeaderPrint(phaseNumber, shouldPrintPhaseHeader, shouldPrintPhases);
+		//printTapeState();
+		//handlePhaseHeaderPrint(phaseNumber, shouldPrintPhaseHeader, shouldPrintPhases);
+		PrintManager::printPhaseHeader(phaseNumber, tape1->getSeriesCounter(), tape1->getDummySeriesCounter(),
+			tape2->getSeriesCounter(), tape2->getDummySeriesCounter(), outputTape->getSeriesCounter(), outputTape->getDummySeriesCounter());
 	}
+
+	/*PrintManager::printTapeHeader("SORTED FILE");
+	outputTape->print();
+	PrintManager::printTapeHeader("SORTED FILE");*/
+
+	return phaseNumber;
 }

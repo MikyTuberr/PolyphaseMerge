@@ -1,91 +1,43 @@
 #include "Tape.h"
 
 Tape::Tape(const std::string& filename) 
-    : filename(filename)
 {
-}
-
-Tape::~Tape()
-{
-    if (file.is_open()) {
-        file.close();
-    }
-}
-
-bool Tape::isOpen() const
-{
-	return file.is_open();
+	io = FileIO(filename);
 }
 
 bool Tape::isEmpty() const
 {
-	return _isEmpty;
+	return io.isEmpty();
 }
 
 bool Tape::open(const std::initializer_list<std::ios::openmode> modes)
 {
-	std::ios::openmode combinedMode = std::ios::binary;
-	for (auto mode : modes) {
-		combinedMode |= mode;
-	}
-	file.open(filename, combinedMode);
-	if (!isOpen()) {
-		std::cerr << "Failed to open file: " << filename << "\n";
-		return false;
-	}
-	return true;
+	return io.open(modes);
 }
 
 void Tape::close()
 {
-	if (isOpen()) {
-		file.close();
-	}
+	io.close();
 }
 
-bool Tape::write(const std::vector<Record>& records)
+void Tape::writeRecord(const Record& record)
 {
-	if (!isOpen()) {
-		std::cerr << "File is not opened!\n";
-		return false;
-	}
-	if (_isEmpty) {
-		_isEmpty = false;
-	}
-	io.write(file, records);
-	return true;
+	io.writeRecord(record);
+}
+
+void Tape::flush()
+{
+	io.flush();
 }
 
 bool Tape::read(std::vector<Record>& records)
 {
-	if (!isOpen()) {
-		std::cerr << "File is not opened!\n";
-		return false;
-	}
-
-	return io.read(file, records);
+	return io.read(records, true);
 }
 
 void Tape::print()
 {
-	if (!isOpen()) {
-		std::cerr << "File is not opened!\n";
-		return;
-	}
-
-	bool stop = true;
-	std::streampos tmpPos = io.getPosition();
-	bool tmpEof = io.getEof();
-	io.resetPosition();
-	while (stop) {
-		std::vector<Record> records;
-		stop = read(records);
-		for (const auto& record : records) {
-			record.print();
-		}
-	}
-	io.setEof(tmpEof);
-	io.setPosition(tmpPos);
+	io.printFile();
 }
 
 void Tape::printContent()
@@ -154,4 +106,14 @@ void Tape::setTail(const Record record)
 void Tape::resetPosition()
 {
 	io.resetPosition();
+}
+
+size_t Tape::getPagesWritten() const
+{
+	return io.getPagesWritten();
+}
+
+size_t Tape::getPagesRead() const
+{
+	return io.getPagesRead();
 }

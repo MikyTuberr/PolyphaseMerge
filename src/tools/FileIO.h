@@ -11,23 +11,38 @@ private:
     void readBuffer(std::fstream& file, std::vector<std::byte>& buffer, size_t bytesToRead);
     void populateRecords(const std::vector<std::byte>& buffer, size_t bytesRead, std::vector<Record>& records);
 
+    void writeBlock();
+
 public:
-    FileIO() : recordSize(RECORD_SIZE), blockSize(BLOCK_SIZE) {}
-    ~FileIO() = default;
+    FileIO() : blockSize(BLOCK_SIZE), recordSize(RECORD_SIZE) {}
+    FileIO(const std::string& filename) : blockSize(BLOCK_SIZE), recordSize(RECORD_SIZE), filename(filename), 
+        file(filename) {}
+    FileIO(FileIO&& other) noexcept;
+    FileIO& operator=(FileIO&& other) noexcept;
+    ~FileIO();
 
-    bool read(std::fstream& file, std::vector<Record>& records);
-    void write(std::fstream& file, const std::vector<Record>& records);
+    bool isEmpty() const;
 
-    std::streampos getPosition() const;
-    void setPosition(std::streampos position);
+    void printFile();
+    bool open(const std::initializer_list<std::ios::openmode> modes);
+    void close();
+
+    bool read(std::vector<Record>& records, const bool& countPage);
+    void writeRecord(const Record& record);
+    void flush();
+
     void resetPosition();
-
-    bool getEof() const;
-    void setEof(bool eof);
+    
+    size_t getPagesWritten() const;
+    size_t getPagesRead() const;
 private:
     bool isEof = false;
+    bool _isEmpty = true;
+    size_t pagesRead = 0, pagesWritten = 0;
+    std::fstream file;
+    std::string filename;
     std::streampos position = 0;
-    std::size_t recordSize;
-    std::size_t blockSize;
+    std::size_t recordSize, blockSize;
+    std::vector<Record> records;
 };
 

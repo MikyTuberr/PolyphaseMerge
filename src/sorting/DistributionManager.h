@@ -10,7 +10,7 @@ class DistributionManager
 private:
 	int findFibonacciNumberOfSeries(const int& firstSeriesCounter, const int& secondSeriesCounter);
 	void writeRecord(const Record& record);
-	void handleSeriesCounters(const Record& record);
+	void checkIfSerieCoalesced(const Record& record);
 	void incrementSeriesCounters();
 	void manageTapeTurn();
 	void processRecord(const Record& record);

@@ -5,8 +5,12 @@ void PrintManager::printStageHeader(const std::string& title)
 	std::cout << "\n****************************** " << title << " ******************************\n\n";
 }
 
-void PrintManager::printPhaseHeader(const int& phaseNumber) {
-	std::cout << "\n################################ PHASE " << phaseNumber << " ################################\n\n";
+void PrintManager::printPhaseHeader(const int& phaseNumber, const int& tape1Series, const int& tape1DummySeries,
+	const int& tape2Series, const int& tape2DummySeries, const int& tape3Series, const int& tape3DummySeries) {
+	std::cout << "\n################################ PHASE " << phaseNumber << " [1: " << tape1Series << " (" <<
+		tape1DummySeries << ") " << "2: " << tape2Series << " (" <<
+		tape2DummySeries << ") " << "3: " << tape3Series << " (" <<
+		tape3DummySeries << ")]" << " ################################\n\n";
 }
 
 bool PrintManager::promptUserDisplayPhasesDecision() {
@@ -26,7 +30,7 @@ bool PrintManager::promptUserDisplayTapesDecision() {
 }
 
 void PrintManager::printTapeHeader(const std::string& header) {
-	std::cout << "\n================================ " << header << " =================================\n\n";
+	std::cout << "\n================================ " << header << " ================================= \n\n";
 }
 
 void PrintManager::printTapeContentMessage(const int& seriesNumber, const int& dummySeriesNumber)
