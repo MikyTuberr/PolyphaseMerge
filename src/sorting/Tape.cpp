@@ -20,19 +20,19 @@ void Tape::close()
 	io.close();
 }
 
-void Tape::writeRecord(const Record& record)
+void Tape::writeRecord(const Record& record, const bool& countPage)
 {
-	io.writeRecord(record);
+	io.writeRecord(record, countPage);
 }
 
-void Tape::flush()
+void Tape::flush(const bool& countPage)
 {
-	io.flush();
+	io.flush(countPage);
 }
 
-bool Tape::read(std::vector<Record>& records)
+bool Tape::readRecord(Record& record, const bool& countPage)
 {
-	return io.read(records, true);
+	return io.readRecord(record, countPage);
 }
 
 void Tape::print()
@@ -116,4 +116,9 @@ size_t Tape::getPagesWritten() const
 size_t Tape::getPagesRead() const
 {
 	return io.getPagesRead();
+}
+
+size_t Tape::getRecordsToWriteSize() const
+{
+	return io.getRecordsToWriteSize();
 }

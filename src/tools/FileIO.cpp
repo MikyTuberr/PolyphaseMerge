@@ -6,7 +6,9 @@ FileIO::FileIO(FileIO&& other) noexcept :
     position(other.position),
     recordSize(other.recordSize),
     blockSize(other.blockSize),
-    records(std::move(other.records))
+    recordsRead(std::move(other.recordsRead)),
+    readIndex(other.readIndex),
+    recordsToWrite(std::move(other.recordsToWrite))
 {
     //other.position = 0;
 }
@@ -22,7 +24,9 @@ FileIO& FileIO::operator=(FileIO && other) noexcept
         position = other.position;
         recordSize = other.recordSize;
         blockSize = other.blockSize;
-        records = std::move(other.records);
+        recordsRead = std::move(other.recordsRead);
+        readIndex = other.readIndex;
+        recordsToWrite = std::move(other.recordsToWrite);
         //other.position = 0;
         file.close();
     }
@@ -48,11 +52,11 @@ void FileIO::printFile()
     std::streampos tmpPos = position;
     bool tmpEof = isEof;
 
-    resetPosition();
+    this->resetPosition();
 
     while (stop) {
         std::vector<Record> records;
-        stop = read(records, false);
+        stop = this->readBlock(records, false);
         for (const auto& record : records) {
             record.print();
         }
@@ -87,7 +91,7 @@ void FileIO::close()
     }
 }
 
-bool FileIO::read(std::vector<Record>& records, const bool& countPage)
+bool FileIO::readBlock(std::vector<Record>& records, const bool& countPage)
 {
     if (!file.is_open()) {
         throw std::runtime_error("File is not opened!\n.");
@@ -120,33 +124,55 @@ bool FileIO::read(std::vector<Record>& records, const bool& countPage)
     return true;
 }
 
-void FileIO::writeRecord(const Record& record) 
+bool FileIO::readRecord(Record& record, const bool& countPage)
+{
+    bool hasMoreRecords = true;
+
+    if (this->readIndex >= this->recordsRead.size()) {
+        this->readIndex = 0;
+        this->recordsRead = std::vector<Record>();
+        hasMoreRecords = this->readBlock(this->recordsRead, countPage);
+    }
+
+    if (hasMoreRecords) {
+        record = this->recordsRead[this->readIndex++];
+    }
+
+    return hasMoreRecords;
+}
+
+void FileIO::writeRecord(const Record& record, const bool& countPage)
 {
     if (_isEmpty) {
 		_isEmpty = false;
 	}
 
-    this->records.push_back(record);
+    this->recordsToWrite.push_back(record);
 
-    if (this->records.size() >= blockSize / recordSize) {
-        this->flush();
+    if (this->recordsToWrite.size() >= blockSize / recordSize) {
+        this->flush(countPage);
     }
 }
 
-void FileIO::flush()
+void FileIO::flush(const bool& countPage)
 {
-    this->writeBlock();
-    records = std::vector<Record>();
+    this->writeBlock(countPage);
+    this->recordsToWrite = std::vector<Record>();
 }
 
-void FileIO::writeBlock() {
+size_t FileIO::getRecordsToWriteSize() const
+{
+    return recordsToWrite.size();
+}
+
+void FileIO::writeBlock(const bool& countPage) {
 
     if (!file.is_open()) {
         throw std::runtime_error("File is not opened!\n");
     }
 
     try {
-        for (const auto& record : records) {
+        for (const auto& record : this->recordsToWrite) {
             std::vector<double> data = record.getData();
 
             for (const auto& value : data) {
@@ -157,7 +183,9 @@ void FileIO::writeBlock() {
                 }
             }
         }
-        pagesWritten++;
+        if (countPage) {
+            pagesWritten++;
+        }
     }
     catch (const std::exception& e) {
         throw e;

@@ -5,7 +5,7 @@ void RecordManager::displayOptions()
     std::cout << "Options:\n";
     std::cout << "1. Generate random records and save to file\n";
     std::cout << "2. Enter records manually and save to file\n";
-    std::cout << "3. Skip\n";
+    std::cout << "3. Sort the file\n";
 }
 
 int RecordManager::handleOptionInput()

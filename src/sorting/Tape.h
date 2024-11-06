@@ -16,9 +16,9 @@ public:
 	bool open(const std::initializer_list<std::ios::openmode> modes);
 	void close();
 
-	void writeRecord(const Record& record);
-	void flush();
-	bool read(std::vector<Record>& records);
+	void writeRecord(const Record& record, const bool& countPage);
+	void flush(const bool& countPage);
+	bool readRecord(Record& record, const bool& countPage);
 
 	void print();
 	void printContent();
@@ -38,6 +38,7 @@ public:
 
 	size_t getPagesWritten() const;
 	size_t getPagesRead() const;
+	size_t getRecordsToWriteSize() const;
 
 private:
 	FileIO io;

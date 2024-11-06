@@ -14,9 +14,9 @@ void RecordFactory::createRandomRecords(const std::string& filename, int records
         double b = dist(gen);
         double theta = dist(gen);
 
-        tape.writeRecord(Record(a, b, theta));
+        tape.writeRecord(Record(a, b, theta), false);
     }
-    tape.flush();
+    tape.flush(false);
     tape.close();
     std::cout << recordsNumber << " random records written to file.\n\n"; \
 }
@@ -37,7 +37,7 @@ void RecordFactory::createManualRecords(const std::string& filename, int records
         std::cout << "Enter angle (in degrees): ";
         std::cin >> theta;
 
-        tape.writeRecord(Record(a, b, theta));
+        tape.writeRecord(Record(a, b, theta), false);
     }
     tape.close();
     std::cout << recordsNumber << " manually entered records written to file.\n\n";

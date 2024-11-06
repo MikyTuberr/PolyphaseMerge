@@ -7,14 +7,9 @@ class PolyphaseSorter
 {
 private:
 	int getNumberOfSeriesToMerge();
-	bool isEndOfSerie(const std::vector<Record>& records, size_t index);
-	void writeToOutputTape(Tape* tape, const std::vector<Record>& records, Record& record, 
-		size_t& index, bool& isSerieEndFlag);
-	void compareRecords(size_t& i, size_t& j);
+	void compareRecords(bool& read1Tape, bool& read2Tape);
 	void handleSerieMergeEnd(int& numberOfSeriesToMerge);
-	void readTape(Tape* tape, std::vector<Record>& records, size_t& index, bool& readTape);
-	void checkTapeState(std::vector<Record>& records, Record& currentRecord, size_t& index,
-		int dummySeriesCount, bool& isSerieEnd, bool& readTape);
+	void readTape(Tape* tape, Record& prevRecord, bool& isSerieEnd, bool& readTape, bool& fileEof);
 	void processBlocks(int& numberOfSeriesToMerge);
 	void swapTapes();
 	void resetTapeStates();
@@ -27,9 +22,10 @@ public:
 	int sortTapesWithFibonacci();
 private:
 	Tape *tape1, *tape2, *outputTape;
-	size_t tape1Index = 0, tape2Index = 0;
-	std::vector<Record> tape1Records, tape2Records;
-	Record tape1CurrentRecord, tape2CurrentRecord;
-	bool isTape1SerieEnd = false, isTape2SerieEnd = false;
+	Record  firstTapePrevRecord, secondTapePrevRecord;
+	bool isFirstTapeSerieEnd = false, isSecondTapeSerieEnd = false;
+	bool fileEof1 = true, fileEof2 = true;
+	bool read1Tape = true;
+	bool read2Tape = true;
 };
 

@@ -2,26 +2,23 @@
 
 void DistributionManager::distributeSeriesWithFibonacci()
 {
+	PrintManager::printStageHeader("STARTING DISTRIBUTION");
 	bool hasMoreRecords = true;
+	Record record;
+	hasMoreRecords = read_tape->readRecord(record, true);
 
 	while (hasMoreRecords) {
-		std::vector<Record> records;
-		hasMoreRecords = read_tape->read(records);
-
-		for (const auto& record : records) {
-			processRecord(record);
-		}
+		processRecord(record);
+		hasMoreRecords = read_tape->readRecord(record, true);
 	}
 
 	finalizeDistribution();
+	PrintManager::printStageHeader("FINISHING DISTRIBUTION");
 }
 
 void DistributionManager::processRecord(const Record& record)
 {
-	//record.print();
-
 	if (!isFirstRecord) {
-		//previousRecord.print();
 		writeRecord(previousRecord);
 		isSerieEnd = previousRecord > record;
 	}
@@ -47,10 +44,13 @@ void DistributionManager::handleSerieEnd(const Record& record)
 
 void DistributionManager::finalizeDistribution()
 {
-	//previousRecord.print();
 	writeRecord(previousRecord);
-	tape1->flush();
-	tape2->flush();
+	if (tape1->getRecordsToWriteSize() > 0) {
+		tape1->flush(true);
+	}
+	if (tape2->getRecordsToWriteSize() > 0) {
+		tape2->flush(true);
+	}
 	if (!isSerieCoalesced) {
 		incrementSeriesCounters();
 	}
@@ -84,11 +84,11 @@ int DistributionManager::findFibonacciNumberOfSeries(const int& firstSeriesCount
 void DistributionManager::writeRecord(const Record& record)
 {
 	if (isFirstTapeTurn) {
-		tape1->writeRecord(record);
+		tape1->writeRecord(record, true);
 		tape1->setTail(record);
 	}
 	else {
-		tape2->writeRecord(record);
+		tape2->writeRecord(record, true);
 		tape2->setTail(record);
 	}
 }

@@ -11,7 +11,8 @@ private:
     void readBuffer(std::fstream& file, std::vector<std::byte>& buffer, size_t bytesToRead);
     void populateRecords(const std::vector<std::byte>& buffer, size_t bytesRead, std::vector<Record>& records);
 
-    void writeBlock();
+    void writeBlock(const bool& countPage);
+    bool readBlock(std::vector<Record>& records, const bool& countPage);
 
 public:
     FileIO() : blockSize(BLOCK_SIZE), recordSize(RECORD_SIZE) {}
@@ -27,9 +28,10 @@ public:
     bool open(const std::initializer_list<std::ios::openmode> modes);
     void close();
 
-    bool read(std::vector<Record>& records, const bool& countPage);
-    void writeRecord(const Record& record);
-    void flush();
+    bool readRecord(Record& record, const bool& countPage);
+    void writeRecord(const Record& record, const bool& countPage);
+    void flush(const bool& countPage);
+    size_t getRecordsToWriteSize() const;
 
     void resetPosition();
     
@@ -43,6 +45,7 @@ private:
     std::string filename;
     std::streampos position = 0;
     std::size_t recordSize, blockSize;
-    std::vector<Record> records;
+    std::vector<Record> recordsToWrite, recordsRead;
+    size_t readIndex = 0;
 };
 
